@@ -11,3 +11,11 @@
 .font-jomhuria {
     font-family: 'Jomhuria_400Regular', cursive;
 }
+
+.text-red {
+    color: #FF0606;
+}
+
+.background-red {
+    background-color: #FF0606;
+}
