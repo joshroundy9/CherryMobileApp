@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/CherryMobile.iml" filepath="$PROJECT_DIR$/.idea/CherryMobile.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/CherryMobileApp.iml" filepath="$PROJECT_DIR$/.idea/CherryMobileApp.iml" />
     </modules>
   </component>
 </project>
