@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    html {
+        font-family: 'Jomhuria', system-ui, cursive;
+    }
+}
+
+.font-jomhuria {
+    font-family: 'Jomhuria_400Regular', cursive;
+}

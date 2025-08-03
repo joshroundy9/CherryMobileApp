@@ -3,7 +3,7 @@ import { View, Text, Button, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Authorized from './components/Authorized';
 import Unauthorized from './components/Unauthorized';
-
+import "./global.css"
   export default function App() {
     const [jwt, setJwt] = useState<string | null>(null);
 
@@ -29,7 +29,7 @@ import Unauthorized from './components/Unauthorized';
     };
 
     return (
-        <View style={styles.container}>
+        <View style={styles.container} className={"flex-1"}>
           {jwt ? (
               <Authorized onLogout={handleLogout} children={undefined}/>
           ) : (
@@ -43,8 +43,9 @@ import Unauthorized from './components/Unauthorized';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#1E1E1E',
     alignItems: 'center',
     justifyContent: 'center',
+    color: '#fff',
   },
 });
