@@ -5,7 +5,7 @@ import {useState} from "react";
 import {RegisterRequest} from "../../types/auth";
 import {RegisterUser} from "../../clients/AuthClient";
 
-function Register({setCurrentScreen, setMessage} : { setCurrentScreen: (register: string) => void, setMessage: (message: string) => void }) {
+function Register({ changeScreen }: { changeScreen: (screen: string, message?: string) => void }) {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [confirmEmail, setConfirmEmail] = useState('');
@@ -36,8 +36,7 @@ function Register({setCurrentScreen, setMessage} : { setCurrentScreen: (register
         setError(null); // Clear any previous errors
         try {
             const response = await RegisterUser(registerRequest);
-            setMessage('Registration successful! Please verify your email.')
-            setCurrentScreen('login');
+            changeScreen('login', 'Registration successful! Please verify your email.');
         } catch (e) {
             if (e instanceof Error) {
                 setError(e.message);
@@ -117,7 +116,7 @@ function Register({setCurrentScreen, setMessage} : { setCurrentScreen: (register
 
             <View className="flex-row items-center pt-8">
                 <Text className="text-white text-3xl font-jomhuria">Already have an account? </Text>
-                <TouchableOpacity onPress={() => setCurrentScreen('login')}>
+                <TouchableOpacity onPress={() => changeScreen('login', undefined)}>
                     <Text className="text-red text-3xl font-jomhuria">Login</Text>
                 </TouchableOpacity>
             </View>
