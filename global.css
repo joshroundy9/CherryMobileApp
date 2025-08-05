@@ -4,7 +4,7 @@
 
 @layer base {
     html {
-        font-family: 'Jomhuria', system-ui, cursive;
+        font-family: 'Jomhuria_400Regular', system-ui, cursive;
     }
 }
 
@@ -18,4 +18,12 @@
 
 .background-red {
     background-color: #FF0606;
+}
+
+.background-gray {
+    background-color: #1E1E1E;
+}
+
+.background-light-gray {
+    background-color: #2D2D2D;
 }

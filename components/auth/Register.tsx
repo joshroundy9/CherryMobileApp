@@ -1,21 +1,131 @@
 import Logo from "../Logo";
-import { View, Text, Button, TouchableOpacity } from 'react-native';
+import {View, Text, TouchableOpacity, TextInput} from 'react-native';
 import RedButton from "../generic/RedButton";
+import {useState} from "react";
+import {RegisterRequest} from "../../types/auth";
+import {RegisterUser} from "../../clients/AuthClient";
 
-function Register({setCurrentScreen} : { setCurrentScreen: (register: string) => void}) {
+function Register({setCurrentScreen, setMessage} : { setCurrentScreen: (register: string) => void, setMessage: (message: string) => void }) {
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
+    const [confirmEmail, setConfirmEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [bodyWeight, setBodyWeight] = useState('');
+    const [error, setError] = useState<string | null>(null);
+
+    const handleRegister = async () => {
+        const registerRequest: RegisterRequest = {
+            username: username,
+            email: email,
+            password: password,
+            weight: bodyWeight,
+        }
+        if (email !== confirmEmail) {
+            setError("Emails do not match");
+            return;
+        }
+        if (password !== confirmPassword) {
+            setError("Passwords do not match");
+            return;
+        }
+        if (!username || !email || !password || !bodyWeight) {
+            setError("All fields are required");
+            return;
+        }
+        setError(null); // Clear any previous errors
+        try {
+            const response = await RegisterUser(registerRequest);
+            setMessage('Registration successful! Please verify your email.')
+            setCurrentScreen('login');
+        } catch (e) {
+            if (e instanceof Error) {
+                setError(e.message);
+            } else {
+                setError('An unexpected error occurred');
+            }
+        }
+    }
+
     return (<View className="w-3/4 flex flex-col items-center">
             <Logo />
-            <Text className="text-white font-jomhuria text-4xl w-full text-center mb-4">
+            <Text className="text-white pt-4 font-jomhuria text-5xl w-full text-center mb-4">
                 Register
             </Text>
-            <RedButton onPress={() => setCurrentScreen('login')} title={"Register"}/>
+            <TextInput
+                className="w-full background-light-gray h-12 max-h-12 pl-2 pt-3 pb-1 rounded font-jomhuria text-white placeholder:text-gray-200 text-3xl"
+                placeholder="Username"
+                value={username}
+                onChangeText={setUsername}
+            />
+            <Text
+                className={"h-6 font-jomhuria text-red text-2xl mb-2 p-0 pl-2 w-full"}
+            >
+                {username.length > 18 ? "Username must be less than 18 characters" : ""}
+            </Text>
 
-            <View className="flex-row items-center">
-                <Text className="text-white text-2xl font-jomhuria">Already have an account? </Text>
+            <TextInput
+                className="w-full background-light-gray h-12 max-h-12 pl-2 pt-3 pb-1 mb-8 rounded font-jomhuria text-white placeholder:text-gray-200 text-3xl"
+                placeholder="Email"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+            />
+
+            <TextInput
+                className="w-full background-light-gray h-12 max-h-12 pl-2 pt-3 pb-1 rounded font-jomhuria text-white placeholder:text-gray-200 text-3xl"
+                placeholder="Confirm Email"
+                value={confirmEmail}
+                onChangeText={setConfirmEmail}
+                keyboardType="email-address"
+            />
+            <Text
+                className={"h-6 font-jomhuria text-red text-2xl mb-2 p-0 pl-2 w-full"}
+            >
+                {email !== confirmEmail ? "Emails do not match" : ""}
+            </Text>
+
+            <TextInput
+                className="w-full background-light-gray h-12 max-h-12 pl-2 pt-3 pb-1 mb-8 rounded font-jomhuria text-white placeholder:text-gray-200 text-3xl"
+                placeholder="Password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+            />
+
+            <TextInput
+                className="w-full background-light-gray h-12 max-h-12 pl-2 pt-3 pb-1 rounded font-jomhuria text-white placeholder:text-gray-200 text-3xl"
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                secureTextEntry
+            />
+            <Text
+                className={"h-6 font-jomhuria text-red text-2xl mb-2 p-0 pl-2 w-full"}
+                >
+                {password !== confirmPassword ? "Passwords do not match" : ""}
+            </Text>
+
+            <TextInput
+                className="w-full background-light-gray h-12 max-h-12 pl-2 pt-3 pb-1 mb-8 rounded font-jomhuria text-white placeholder:text-gray-200 text-3xl"
+                placeholder="Body Weight (LBS)"
+                value={bodyWeight}
+                onChangeText={setBodyWeight}
+                keyboardType="numeric"
+            />
+            <RedButton onPress={() => handleRegister()} title={"Register"}/>
+
+            <View className="flex-row items-center pt-8">
+                <Text className="text-white text-3xl font-jomhuria">Already have an account? </Text>
                 <TouchableOpacity onPress={() => setCurrentScreen('login')}>
-                    <Text className="text-red text-2xl font-jomhuria">Login</Text>
+                    <Text className="text-red text-3xl font-jomhuria">Login</Text>
                 </TouchableOpacity>
             </View>
+
+                <Text className="text-red text-2xl font-jomhuria mt-4 h-12">
+                    {error ? error : ''}
+                </Text>
+
         </View>
     );
 }
