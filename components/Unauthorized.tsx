@@ -1,5 +1,3 @@
-import {Button, Text, View} from "react-native";
-import Logo from "./Logo";
 import {useState} from "react";
 import Register from "./auth/Register";
 import Login from "./auth/Login";

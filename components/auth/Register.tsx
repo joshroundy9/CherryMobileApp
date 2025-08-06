@@ -13,6 +13,7 @@ function Register({ changeScreen }: { changeScreen: (screen: string, message?: s
     const [confirmPassword, setConfirmPassword] = useState('');
     const [bodyWeight, setBodyWeight] = useState('');
     const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
 
     const handleRegister = async () => {
         const registerRequest: RegisterRequest = {
@@ -34,10 +35,13 @@ function Register({ changeScreen }: { changeScreen: (screen: string, message?: s
             return;
         }
         setError(null); // Clear any previous errors
+        setLoading(true);
         try {
             const response = await RegisterUser(registerRequest);
             changeScreen('login', 'Registration successful! Please verify your email.');
+            setLoading(false);
         } catch (e) {
+            setLoading(false);
             if (e instanceof Error) {
                 setError(e.message);
             } else {
@@ -85,12 +89,17 @@ function Register({ changeScreen }: { changeScreen: (screen: string, message?: s
             </Text>
 
             <TextInput
-                className="w-full background-light-gray h-12 max-h-12 pl-2 pt-3 pb-1 mb-8 rounded font-jomhuria text-white placeholder:text-gray-200 text-3xl"
+                className="w-full background-light-gray h-12 max-h-12 pl-2 pt-3 pb-1 rounded font-jomhuria text-white placeholder:text-gray-200 text-3xl"
                 placeholder="Password"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
             />
+            <Text
+                className={"h-6 font-jomhuria text-red text-2xl mb-2 p-0 pl-2 w-full"}
+            >
+                {!password.match('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$') && password ? "Passwords must have a num, capital, and special char" : ""}
+            </Text>
 
             <TextInput
                 className="w-full background-light-gray h-12 max-h-12 pl-2 pt-3 pb-1 rounded font-jomhuria text-white placeholder:text-gray-200 text-3xl"
@@ -112,7 +121,7 @@ function Register({ changeScreen }: { changeScreen: (screen: string, message?: s
                 onChangeText={setBodyWeight}
                 keyboardType="numeric"
             />
-            <RedButton onPress={() => handleRegister()} title={"Register"}/>
+            <RedButton onPress={() => handleRegister()} title={"Register"} disabled={loading}/>
 
             <View className="flex-row items-center pt-8">
                 <Text className="text-white text-3xl font-jomhuria">Already have an account? </Text>
