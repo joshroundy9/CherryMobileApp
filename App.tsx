@@ -5,9 +5,10 @@ import { useFonts, Jomhuria_400Regular } from '@expo-google-fonts/jomhuria';
 import Authorized from './components/Authorized';
 import Unauthorized from './components/Unauthorized';
 import "./global.css"
+import {LoginResponse} from "./types/auth";
 
 export default function App() {
-    const [jwt, setJwt] = useState<string | null>(null);
+    const [loginResponse, setLoginResponse] = useState<LoginResponse | null>(null);
 
   const [fontsLoaded] = useFonts({
     Jomhuria_400Regular,
@@ -15,9 +16,16 @@ export default function App() {
 
   useEffect(() => {
     const loadToken = async () => {
-      const storedToken = await AsyncStorage.getItem('jwt');
+      const storedToken = await AsyncStorage.getItem('loginResponse');
       if (storedToken) {
-        setJwt(storedToken);
+        try {
+          const parsedLoginResponse: LoginResponse = JSON.parse(storedToken);
+          setLoginResponse(parsedLoginResponse);
+        } catch (error) {
+          console.error('Error parsing stored login response:', error);
+          // Handle invalid stored data by removing it
+          await AsyncStorage.removeItem('loginResponse');
+        }
       }
     };
     loadToken();
@@ -27,20 +35,19 @@ export default function App() {
     return null;
   }
 
-  const handleLogin = async () => {
-    const token = 'fake-jwt-token';
-    await AsyncStorage.setItem('jwt', token);
-    setJwt(token);
+  const handleLogin = async (loginResponse : LoginResponse) => {
+    await AsyncStorage.setItem('loginResponse', JSON.stringify(loginResponse));
+    setLoginResponse(loginResponse);
   };
 
   const handleLogout = async () => {
-    await AsyncStorage.removeItem('jwt');
-    setJwt(null);
+    await AsyncStorage.removeItem('loginResponse');
+    setLoginResponse(null);
   };
 
   return (
       <View style={styles.container}>
-        {jwt ? (
+        {loginResponse ? (
             <Authorized onLogout={handleLogout} children={undefined}/>
         ) : (
             <Unauthorized onLogin={handleLogin} children={undefined}/>

@@ -4,6 +4,12 @@ export interface RegisterRequest {
     email: string;
     weight: string;
 }
+
+export interface LoginRequest {
+    username: string;
+    password: string;
+}
+
 export interface UserResponse {
     userID: string;
     username: string;
@@ -12,4 +18,8 @@ export interface UserResponse {
     weight: string;
     startingWeight: string;
     createdTS: string;
+}
+export interface LoginResponse {
+    user: UserResponse;
+    jwt: string;
 }
