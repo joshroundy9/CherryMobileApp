@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    html {
+        font-family: 'Jomhuria_400Regular', system-ui, cursive;
+    }
+}
+
+.font-jomhuria {
+    font-family: 'Jomhuria_400Regular', cursive;
+}
+
+.text-red {
+    color: #FF0606;
+}
+
+.background-red {
+    background-color: #FF0606;
+}
+
+.background-gray {
+    background-color: #1E1E1E;
+}
+
+.background-light-gray {
+    background-color: #2D2D2D;
+}
