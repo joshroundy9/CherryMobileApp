@@ -1,8 +1,7 @@
 import {LoginRequest, LoginResponse, RegisterRequest, UserResponse} from '../types/auth';
+export const API_URL = 'https://cherrywebserver.joshroundy.dev:8080';
 
 export const RegisterUser = async (request: RegisterRequest): Promise<UserResponse> => {
-    const API_URL = 'https://cherrywebserver.joshroundy.dev:8080';
-    console.log('Full URL:', `${API_URL}/auth/register`);
     const response = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
         headers: {
@@ -25,8 +24,6 @@ export const RegisterUser = async (request: RegisterRequest): Promise<UserRespon
 };
 
 export const LoginUser = async (request: LoginRequest): Promise<LoginResponse> => {
-    const API_URL = 'https://cherrywebserver.joshroundy.dev:8080';
-    console.log('Full URL:', `${API_URL}/auth/login`);
     const response = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: {

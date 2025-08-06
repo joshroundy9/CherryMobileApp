@@ -123,14 +123,14 @@ function Register({ changeScreen }: { changeScreen: (screen: string, message?: s
             />
             <RedButton onPress={() => handleRegister()} title={"Register"} disabled={loading}/>
 
-            <View className="flex-row items-center pt-8">
+            <View className="flex-row items-center pt-10">
                 <Text className="text-white text-3xl font-jomhuria">Already have an account? </Text>
                 <TouchableOpacity onPress={() => changeScreen('login', undefined)}>
                     <Text className="text-red text-3xl font-jomhuria">Login</Text>
                 </TouchableOpacity>
             </View>
 
-                <Text className="text-red text-2xl font-jomhuria mt-4 h-12">
+                <Text className="text-red text-3xl font-jomhuria mt-4 h-12">
                     {error ? error : ''}
                 </Text>
 
