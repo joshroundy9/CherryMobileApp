@@ -35,7 +35,7 @@ function Login({ changeScreen, getMessage, onLogin }: { changeScreen: (screen: s
 
     return (<View className="w-3/4 flex flex-col items-center">
             <Logo />
-            <Text className="text-white pt-4 font-jomhuria text-5xl w-full text-center mb-8">
+            <Text className="text-white pt-4 font-jomhuria text-5xl w-full text-center mb-8 mt-4">
                 Login
             </Text>
 

@@ -46,7 +46,7 @@ export default function App() {
   };
 
   return (
-      <View style={styles.container}>
+      <View className={"flex-1 background-gray items-center justify-center text-white"}>
         {loginResponse ? (
             <Authorized onLogout={handleLogout} children={undefined}/>
         ) : (
@@ -55,13 +55,3 @@ export default function App() {
       </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#1E1E1E',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: '#fff',
-  },
-});
