@@ -3,6 +3,7 @@ import LargeLogo, { SmallLogo } from "./generic/Logo";
 import { useState, useRef, useEffect } from "react";
 import {LoginResponse} from "../types/auth";
 import AccountInformation from "./dashboard/AccountInformation";
+import Home from "./dashboard/Home";
 
 function Authorized({ children, onLogout, loginResponse }: { children: React.ReactNode, onLogout: () => void, loginResponse: () => LoginResponse | null }) {
     const [screen, setScreen] = useState('home');
@@ -31,10 +32,7 @@ function Authorized({ children, onLogout, loginResponse }: { children: React.Rea
         switch(screen) {
             case 'home':
                 return (
-                    <View>
-                        <Text className="text-white font-jomhuria text-2xl justify-center">You are authorized to view this area.</Text>
-                        <Button title="Log Out" onPress={onLogout} />
-                    </View>
+                    <Home loginResponse={loginResponse}/>
                 );
             case 'calendar':
                 return (
