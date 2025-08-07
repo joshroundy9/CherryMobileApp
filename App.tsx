@@ -10,6 +10,10 @@ import {LoginResponse} from "./types/auth";
 export default function App() {
     const [loginResponse, setLoginResponse] = useState<LoginResponse | null>(null);
 
+  const getLoginResponse = (): LoginResponse | null => {
+    return loginResponse;
+  };
+
   const [fontsLoaded] = useFonts({
     Jomhuria_400Regular,
   });
@@ -46,9 +50,9 @@ export default function App() {
   };
 
   return (
-      <View className={"flex-1 background-gray items-center justify-center text-white"}>
+      <View className={"w-full h-full flex-1 background-gray items-center justify-center text-white"}>
         {loginResponse ? (
-            <Authorized onLogout={handleLogout} children={undefined}/>
+            <Authorized onLogout={handleLogout} children={undefined} loginResponse={getLoginResponse}/>
         ) : (
             <Unauthorized onLogin={handleLogin} children={undefined}/>
         )}

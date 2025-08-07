@@ -1,4 +1,4 @@
-import Logo from "../Logo";
+import LargeLogo from "../generic/Logo";
 import {View, Text, TouchableOpacity, TextInput} from 'react-native';
 import RedButton from "../generic/RedButton";
 import {useState} from "react";
@@ -51,7 +51,7 @@ function Register({ changeScreen }: { changeScreen: (screen: string, message?: s
     }
 
     return (<View className="w-3/4 flex flex-col items-center">
-            <Logo />
+            <LargeLogo />
             <Text className="text-white pt-4 font-jomhuria text-5xl w-full text-center mb-4">
                 Register
             </Text>
@@ -130,7 +130,7 @@ function Register({ changeScreen }: { changeScreen: (screen: string, message?: s
                 </TouchableOpacity>
             </View>
 
-                <Text className="text-red text-3xl font-jomhuria mt-4 h-12">
+                <Text className="text-red text-3xl w-full font-jomhuria mt-4 h-24 text-center">
                     {error ? error : ''}
                 </Text>
 
