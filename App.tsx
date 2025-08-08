@@ -5,7 +5,7 @@ import { useFonts, Jomhuria_400Regular } from '@expo-google-fonts/jomhuria';
 import Authorized from './components/Authorized';
 import Unauthorized from './components/Unauthorized';
 import "./global.css"
-import {LoginResponse} from "./types/auth";
+import {LoginResponse} from "./types/Auth";
 
 export default function App() {
     const [loginResponse, setLoginResponse] = useState<LoginResponse | null>(null);

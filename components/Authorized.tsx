@@ -1,7 +1,7 @@
 import {Button, Image, Text, TouchableOpacity, View, Animated} from "react-native";
 import LargeLogo, { SmallLogo } from "./generic/Logo";
 import { useState, useRef, useEffect } from "react";
-import {LoginResponse} from "../types/auth";
+import {LoginResponse} from "../types/Auth";
 import AccountInformation from "./dashboard/AccountInformation";
 import Home from "./dashboard/Home";
 

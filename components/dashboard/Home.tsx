@@ -1,4 +1,4 @@
-import {LoginResponse} from "../../types/auth";
+import {LoginResponse} from "../../types/Auth";
 import {Text, View} from "react-native";
 
 function AccountInformation({ loginResponse } : {loginResponse: () => LoginResponse | null}) {

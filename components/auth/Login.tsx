@@ -2,7 +2,7 @@ import LargeLogo from "../generic/Logo";
 import {View, Text, TouchableOpacity, TextInput, Linking} from 'react-native';
 import RedButton from "../generic/RedButton";
 import {useState} from "react";
-import {LoginRequest, LoginResponse} from "../../types/auth";
+import {LoginRequest, LoginResponse} from "../../types/Auth";
 import {LoginUser} from "../../clients/AuthClient";
 
 function Login({ changeScreen, getMessage, onLogin }: { changeScreen: (screen: string, message?: string) => void, getMessage: () => string | null, onLogin: (loginResponse: LoginResponse) => Promise<void> }) {

@@ -2,7 +2,7 @@ import LargeLogo from "../generic/Logo";
 import {View, Text, TouchableOpacity, TextInput} from 'react-native';
 import RedButton from "../generic/RedButton";
 import {useState} from "react";
-import {RegisterRequest} from "../../types/auth";
+import {RegisterRequest} from "../../types/Auth";
 import {RegisterUser} from "../../clients/AuthClient";
 
 function Register({ changeScreen }: { changeScreen: (screen: string, message?: string) => void }) {

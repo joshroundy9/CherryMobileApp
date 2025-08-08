@@ -1,7 +1,7 @@
 import {useState} from "react";
 import Register from "./auth/Register";
 import Login from "./auth/Login";
-import {LoginResponse} from "../types/auth";
+import {LoginResponse} from "../types/Auth";
 
 function Unauthorized({ children, onLogin }: { children: React.ReactNode, onLogin: (loginResponse : LoginResponse) => Promise<void> }) {
     const [currentScreen, setCurrentScreen] = useState<string>('login');
