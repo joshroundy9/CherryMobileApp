@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import {LoginResponse} from "../types/Auth";
 import AccountInformation from "./dashboard/AccountInformation";
 import Home from "./dashboard/Home";
+import Tracking from "./dashboard/tracking/Tracking";
 
 function Authorized({ children, onLogout, loginResponse }: { children: React.ReactNode, onLogout: () => void, loginResponse: () => LoginResponse | null }) {
     const [screen, setScreen] = useState('home');
@@ -34,11 +35,9 @@ function Authorized({ children, onLogout, loginResponse }: { children: React.Rea
                 return (
                     <Home loginResponse={loginResponse}/>
                 );
-            case 'calendar':
+            case 'tracking':
                 return (
-                    <View>
-                        <Text className="text-white font-jomhuria text-2xl justify-center">Calendar Screen</Text>
-                    </View>
+                    <Tracking loginResponse={loginResponse} initialScreen={'calendar'} initialDate={undefined}/>
                 );
             case 'profile':
                 return (
@@ -68,10 +67,10 @@ function Authorized({ children, onLogout, loginResponse }: { children: React.Rea
                         style={{ width: 55, height: 55, transform: [{scale: 0.70}] }}
                     />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => changeScreen('calendar')}>
+                <TouchableOpacity onPress={() => changeScreen('tracking')}>
                     <Image
                         className={"w-16 h-16"}
-                        source={screen === 'calendar' ? require('../assets/calendar-filled.png') : require('../assets/calendar.png')}
+                        source={screen === 'tracking' ? require('../assets/calendar-filled.png') : require('../assets/calendar.png')}
                         style={{ width: 55, height: 55, transform: [{scale: 0.70}] }}
                     />
                 </TouchableOpacity>

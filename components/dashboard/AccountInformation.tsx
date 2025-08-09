@@ -1,6 +1,6 @@
 import {View, Text, Linking, TouchableOpacity, Image} from "react-native";
 import {LoginResponse} from "../../types/Auth";
-import RedButton from "../generic/RedButton";
+import RedButton from "../generic/Buttons";
 
 function AccountInformation({ loginResponse, onLogout } : {loginResponse: () => LoginResponse | null, onLogout: () => void}) {
     // @ts-ignore

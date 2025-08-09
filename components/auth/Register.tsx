@@ -1,6 +1,6 @@
 import LargeLogo from "../generic/Logo";
 import {View, Text, TouchableOpacity, TextInput} from 'react-native';
-import RedButton from "../generic/RedButton";
+import RedButton from "../generic/Buttons";
 import {useState} from "react";
 import {RegisterRequest} from "../../types/Auth";
 import {RegisterUser} from "../../clients/AuthClient";

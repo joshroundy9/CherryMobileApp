@@ -166,7 +166,7 @@ export const DeleteMeal = async (request: DeleteMealRequest, jwt: string): Promi
         const errorData = await response.text();
         throw new Error(errorData);
     } else {
-        console.error('Failed to create meal:', response.status, response.text());
-        throw new Error('An unexpected error occurred while creating the meal.');
+        console.error('Failed to delete meal:', response.status, response.text());
+        throw new Error('An unexpected error occurred while deleting the meal.');
     }
 };
