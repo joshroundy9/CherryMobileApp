@@ -52,7 +52,7 @@ export default function App() {
   return (
       <View className={"w-full h-full flex-1 background-gray items-center justify-center text-white"}>
         {loginResponse ? (
-            <Authorized onLogout={handleLogout} children={undefined} loginResponse={getLoginResponse}/>
+            <Authorized onLogout={handleLogout} children={undefined} loginResponse={getLoginResponse} setLoginResponse={setLoginResponse}/>
         ) : (
             <Unauthorized onLogin={handleLogin} children={undefined}/>
         )}

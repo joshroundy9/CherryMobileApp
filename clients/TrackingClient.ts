@@ -129,6 +129,8 @@ export const UpdateDateNutrition = async (request: UpdateDateRequest, jwt: strin
 };
 
 export const CreateMeal = async (request: CreateMealRequest, jwt: string): Promise<MealResponse> => {
+    console.log('Creating meal with request:', request);
+    console.log('JWT:', jwt);
     const response = await fetch(`${API_URL}/data/meal`, {
         method: 'POST',
         headers: {
@@ -143,8 +145,8 @@ export const CreateMeal = async (request: CreateMealRequest, jwt: string): Promi
         const data = await response.json();
         return data as MealResponse;
     } else if (response.status === 400) {
-        const errorData = await response.text();
-        throw new Error(errorData);
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Invalid request data');
     } else {
         console.error('Failed to create meal:', response.status, response.text());
         throw new Error('An unexpected error occurred while creating the meal.');

@@ -1,20 +1,33 @@
-import {Text, View} from 'react-native';
+import {Image, Text, TouchableOpacity, View} from 'react-native';
 import {LoginResponse} from "../../../types/Auth";
 import RedButton, {GoBackButton} from "../../generic/Buttons";
 import {useState, useEffect} from "react";
-import {GetMeals, GetOrCreateDate} from '../../../clients/TrackingClient';
+import {
+    CreateMeal,
+    DeleteMeal,
+    GetMeals,
+    GetOrCreateDate,
+    UpdateDateWeight,
+    UpdateUserWeight
+} from '../../../clients/TrackingClient';
 import {DateResponse, MealResponse} from "../../../types/Tracking";
+import Loading from "../../generic/Loading";
+import TextEntry from "../../generic/TextEntry";
 
-function MealTracking({date, loginResponse, setScreen}: {
+function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
     date: string,
     loginResponse: () => LoginResponse | null,
-    setScreen: ({newScreen, newDate}: {newScreen: string, newDate?: string}) => void }){
+    setLoginResponse: (loginResponse: LoginResponse | null) => void,
+    setScreen: ({newScreen, newDate}: {newScreen: string, newDate?: string, mealID?: string}) => void }){
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [meals, setMeals] = useState<MealResponse[]>([]);
     const [dateResponse, setDateResponse] = useState<DateResponse | null>(null);
     const jwt = loginResponse()?.jwt || '';
+    const [addingMeal, setAddingMeal] = useState(false);
+    const [addMealTime, setAddMealTime] = useState('');
+    const [updatingWeight, setUpdatingWeight] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -48,12 +61,142 @@ function MealTracking({date, loginResponse, setScreen}: {
     }, [date, jwt]);
 
     const handleUpdateWeight = () => {
-        console.log("Update weight button pressed");
+        setUpdatingWeight(true);
     };
 
     const handleGoBack = () => {
         setScreen({newScreen: 'calendar'});
     }
+
+    const createMeal = async (mealName: string) => {
+        CreateMeal({
+            mealName: mealName,
+            userID: `${loginResponse()?.user.userID}`,
+            dateID: `${dateResponse?.dateID}`,
+            time: addMealTime + ':00'
+        }, jwt).then(response => {
+            newMeal.mealID = response.mealID;
+        }).catch(e => {
+            if (e instanceof Error) {
+                setError(e.message);
+            } else {
+                setError('An unexpected error occurred while creating the meal.');
+            }
+            return;
+        })
+        const newMeal: MealResponse = {
+            mealName: mealName,
+            time: addMealTime,
+            mealID: '',
+            userID: loginResponse()?.user.userID || '',
+            dateID: dateResponse?.dateID || '',
+            mealCalories: 0,
+            mealProtein: 0
+        };
+        setMeals([...meals, newMeal]);
+        setAddingMeal(false);
+        setAddMealTime("");
+    }
+    const deleteMeal = async (mealID: string) => {
+        try {
+            await DeleteMeal({
+                userID: loginResponse()?.user.userID || '',
+                mealID: mealID
+            }, jwt);
+            setMeals(meals.filter(meal => meal.mealID !== mealID));
+        } catch (e) {
+            if (e instanceof Error) {
+                setError(e.message);
+            } else {
+                setError('An unexpected error occurred while deleting the meal.');
+            }
+        }
+    }
+
+    const updateWeight = async (weight: string) => {
+        if (!dateResponse) {
+            setError('Date response is not available');
+            return;
+        }
+        try {
+            await UpdateDateWeight({
+                dateID: dateResponse.dateID,
+                userID: loginResponse()?.user.userID || '',
+                dailyWeight: weight,
+            }, jwt);
+            if (date === new Date().toISOString().split('T')[0]) {
+                const updatedUser = await UpdateUserWeight({
+                    userID: loginResponse()?.user.userID || '',
+                    weight: weight
+                }, jwt);
+
+            }
+            setDateResponse({
+                ...dateResponse,
+                dailyWeight: weight
+            });
+            setUpdatingWeight(false);
+        } catch (e) {
+            if (e instanceof Error) {
+                setError(e.message);
+            } else {
+                setError('An unexpected error occurred while updating the weight.');
+            }
+        }
+    }
+
+    if (loading) {
+        return <Loading/>;
+    }
+
+    if (updatingWeight) {
+        return (
+            <TextEntry
+                properties={{
+                    header: `Update Weight: ${Number(dateResponse?.dailyWeight) === 0 ? loginResponse()?.user.weight : dateResponse?.dailyWeight}`,
+                    placeholder: `Weight (LBS)`,
+                    onSubmit: updateWeight,
+                    onCancel: () => {
+                        setUpdatingWeight(false);
+                    }
+                }}
+            />
+        );
+    }
+
+    if (addingMeal) {
+        return (
+            <TextEntry
+                properties={{
+                    header: `Create Meal: ${addMealTime}`,
+                    placeholder: `Enter meal name`,
+                    onSubmit: createMeal,
+                    onCancel: () => {
+                        setAddingMeal(false);
+                        setAddMealTime("");
+                    }
+                }}
+            />
+        );
+    }
+
+    const intervals = Array.from({length: 12}, (_, i) => {
+        const startHour = i * 2;
+        const endHour = startHour + 2;
+        return {
+            label: `${((startHour % 12) || 12)}${startHour < 12 ? 'am' : 'pm'} - ${((endHour % 12) || 12)}${endHour < 12 ? 'am' : 'pm'}`,
+            start: startHour,
+            end: endHour
+        };
+    });
+
+    const getMealForInterval = (start: number, end: number) => {
+        return meals.find(meal => {
+            // Assume meal.time is a string like 'HH:mm' or Date
+            let mealHour = parseInt(meal.time.split(':')[0], 10);
+            return mealHour >= start && mealHour < end;
+        });
+    };
 
     return (
         <View className={"w-full h-full flex flex-col items-center justify-between"}>
@@ -71,9 +214,60 @@ function MealTracking({date, loginResponse, setScreen}: {
                 </Text>
                 <Text className={"font-jomhuria text-4xl text-white"}>Tap a time to create a meal</Text>
             </View>
+            <View className={"px-4 w-full flex flex-row justify-between items-center"}>
+                <Text className={"text-white font-jomhuria text-4xl ml-7"}>Meal Name</Text>
+                <View className={"flex flex-row"}>
+                    <Text className={"text-white font-jomhuria text-4xl mr-6"}>CALS</Text>
+                    <Text className={"text-white font-jomhuria text-4xl mr-6"}>PROTEIN</Text>
+                </View>
+            </View>
+            <View className={"flex-1 w-full"}>
+                {intervals.map((interval, idx) => {
+                    const meal = getMealForInterval(interval.start, interval.end);
+                    return (
+                        <View key={idx} className="border-b border-gray-700 w-full flex flex-row items-center justify-between px-2 pb-1 pt-2 background-gray">
+                            {meal ? (
+                                <View className={"flex w-full flex-row justify-between px-0.5"}>
+                                    <TouchableOpacity className={"flex flex-row gap-1"} onPress={() => setScreen({newScreen: 'mealitem', newDate: date, mealID: meal.mealID})}>
+                                        <Image
+                                            source={require('../../../assets/edit.png')}
+                                            style={{ width: 25, height: 25 }}
+                                        />
+                                        <Text className="text-red font-jomhuria text-3xl">{meal.mealName} <Text className="text-2xl text-white">({interval.label})</Text></Text>
+                                    </TouchableOpacity>
+                                    <View className={"flex flex-row"}>
+                                        <Text className="text-white font-jomhuria text-3xl mr-9">{meal.mealCalories}</Text>
+                                        <Text className="text-white font-jomhuria text-3xl mr-4 w-16 text-right">{meal.mealProtein}g</Text>
+                                        <TouchableOpacity className={"mr-1"} onPress={() => deleteMeal(meal.mealID)}>
+                                            <Text className={"font-jomhuria text-red text-4xl"}>
+                                                X
+                                            </Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            ) : (
+                                <TouchableOpacity
+                                    className="w-full flex flex-row"
+                                    onPress={() => {
+                                        setAddingMeal(true);
+                                        setAddMealTime(`${interval.start.toString().padStart(2, '0')}:00`);
+                                    }}
+                                >
+                                    <Image className={"mr-1.5"}
+                                        source={require('../../../assets/add.png')}
+                                        style={{ width: 25, height: 25 }}
+                                    />
+                                    <Text className="text-3xl text-white font-jomhuria">({interval.label})</Text>
+                                </TouchableOpacity>
+                            )}
+                        </View>
+                    );
+                })}
+            </View>
+            {error && <Text className={"text-red text-3xl font-jomhuria text-center"}>{error}</Text>}
 
             <View className={"flex flex-row justify-between items-center w-full px-4 align-bottom mb-4"}>
-                <RedButton title={`Update Weight: ${Number(dateResponse?.dailyWeight) === 0 ? loginResponse()?.user.weight : dateResponse?.dailyWeight}`} onPress={handleUpdateWeight} />
+                <RedButton title={` Update Weight: ${Number(dateResponse?.dailyWeight) === 0 ? loginResponse()?.user.weight : dateResponse?.dailyWeight} `} onPress={handleUpdateWeight} />
                 <GoBackButton title={"Go Back"} onPress={handleGoBack} />
             </View>
         </View>

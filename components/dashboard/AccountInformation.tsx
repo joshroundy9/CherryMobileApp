@@ -46,19 +46,19 @@ function AccountInformation({ loginResponse, onLogout } : {loginResponse: () => 
                         <TouchableOpacity className={"mt-2"} onPress={() => Linking.openURL('https://www.linkedin.com/in/joshroundy/')}>
                             <Image
                                 source={require('../../assets/linkedin.png')}
-                                style={{ width: 45, height: 45 }}
+                                style={{ width: 40, height: 40 }}
                             />
                         </TouchableOpacity>
                         <TouchableOpacity className={"mt-2"} onPress={() => Linking.openURL('https://github.com/joshroundy9')}>
                             <Image
                                 source={require('../../assets/github.png')}
-                                style={{ width: 45, height: 45 }}
+                                style={{ width: 40, height: 40 }}
                             />
                         </TouchableOpacity>
                         <TouchableOpacity className={"mt-2"} onPress={() => Linking.openURL('https://joshroundy.dev')}>
                             <Image
                                 source={require('../../assets/portfolio.png')}
-                                style={{ width: 45, height: 45 }}
+                                style={{ width: 40, height: 40 }}
                             />
                         </TouchableOpacity>
                     </View>

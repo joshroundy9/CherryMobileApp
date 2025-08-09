@@ -5,7 +5,7 @@ import AccountInformation from "../AccountInformation";
 import {LoginResponse} from "../../../types/Auth";
 import MealTracking from "./MealTracking";
 
-function Tracking({loginResponse, initialScreen, initialDate}: {loginResponse: () => LoginResponse | null, initialScreen: string, initialDate?: string}) {
+function Tracking({loginResponse, setLoginResponse, initialScreen, initialDate}: {loginResponse: () => LoginResponse | null, setLoginResponse: (loginResponse: LoginResponse | null) => void, initialScreen: string, initialDate?: string}) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
@@ -33,7 +33,7 @@ function Tracking({loginResponse, initialScreen, initialDate}: {loginResponse: (
         setTimeout(() => setScreen(newScreen), 150);
     };
 
-    const changeScreenUpdateDate = ({newScreen, newDate}: {newScreen: string, newDate?: string}) => {
+    const changeScreenUpdateDate = ({newScreen, newDate, mealID}: {newScreen: string, newDate?: string, mealID?: string}) => {
         if (newScreen === screen && newDate === date) return;
         if (newDate) {
             setDate(newDate);
@@ -49,7 +49,11 @@ function Tracking({loginResponse, initialScreen, initialDate}: {loginResponse: (
                 );
             case 'meal':
                 return (
-                    <MealTracking date={date} loginResponse={loginResponse} setScreen={changeScreenUpdateDate}/>
+                    <MealTracking date={date || ''} loginResponse={loginResponse} setLoginResponse={setLoginResponse} setScreen={changeScreenUpdateDate}/>
+                );
+            case 'mealitem':
+                return (
+                    <Text className={"text-white"}>meal item panel</Text>
                 );
             default:
                 return null;

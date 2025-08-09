@@ -6,7 +6,7 @@ import AccountInformation from "./dashboard/AccountInformation";
 import Home from "./dashboard/Home";
 import Tracking from "./dashboard/tracking/Tracking";
 
-function Authorized({ children, onLogout, loginResponse }: { children: React.ReactNode, onLogout: () => void, loginResponse: () => LoginResponse | null }) {
+function Authorized({ children, onLogout, loginResponse, setLoginResponse }: { children: React.ReactNode, onLogout: () => void, loginResponse: () => LoginResponse | null, setLoginResponse: (loginResponse: LoginResponse | null) => void }) {
     const [screen, setScreen] = useState('home');
     const fadeAnim = useRef(new Animated.Value(1)).current;
 
@@ -37,7 +37,7 @@ function Authorized({ children, onLogout, loginResponse }: { children: React.Rea
                 );
             case 'tracking':
                 return (
-                    <Tracking loginResponse={loginResponse} initialScreen={'calendar'} initialDate={undefined}/>
+                    <Tracking loginResponse={loginResponse} setLoginResponse={setLoginResponse} initialScreen={'calendar'} initialDate={undefined}/>
                 );
             case 'profile':
                 return (
