@@ -3,6 +3,7 @@ import {LoginResponse} from "../../../types/Auth";
 import RedButton, {GoBackButton} from "../../generic/Buttons";
 import {useState, useEffect} from "react";
 import {GetMeals, GetOrCreateDate} from '../../../clients/TrackingClient';
+import {DateResponse, MealResponse} from "../../../types/Tracking";
 
 function MealTracking({date, loginResponse, setScreen}: {
     date: string,
@@ -11,8 +12,8 @@ function MealTracking({date, loginResponse, setScreen}: {
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [meals, setMeals] = useState([]);
-    const [dateID, setDateID] = useState<string>('');
+    const [meals, setMeals] = useState<MealResponse[]>([]);
+    const [dateResponse, setDateResponse] = useState<DateResponse | null>(null);
 
     const jwt = loginResponse()?.jwt || '';
 
@@ -25,7 +26,7 @@ function MealTracking({date, loginResponse, setScreen}: {
                     userID: loginResponse()?.user.userID || ''
                 }, jwt);
 
-                setDateID(dateResponse.dateID);
+                setDateResponse(dateResponse);
 
                 const mealsResponse = await GetMeals({
                     dateID: dateResponse.dateID,

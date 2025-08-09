@@ -12,7 +12,7 @@ import {UserResponse} from "../types/Auth";
 const API_URL = 'https://cherrywebserver.joshroundy.dev:8080';
 
 export const GetOrCreateDate = async (request: DateRequest, jwt: string): Promise<DateResponse> => {
-    const response = await fetch(`${API_URL}/date/from-user-and-date?date=` + request.date, {
+    const response = await fetch(`${API_URL}/data/date/from-user-and-date?date=${request.date}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -24,6 +24,7 @@ export const GetOrCreateDate = async (request: DateRequest, jwt: string): Promis
 
     if (response.ok) {
         const data = await response.json();
+        console.log('Date retrieved or created successfully:', data);
         return data as DateResponse;
     } else if (response.status === 400) {
         const errorData = await response.text();
@@ -35,7 +36,7 @@ export const GetOrCreateDate = async (request: DateRequest, jwt: string): Promis
 };
 
 export const UpdateUserWeight = async (request: UpdateWeightRequest, jwt: string): Promise<UserResponse> => {
-    const response = await fetch(`${API_URL}/user/update-weight?weight=` + request.weight, {
+    const response = await fetch(`${API_URL}/data/user/update-weight?weight=` + request.weight, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -58,7 +59,7 @@ export const UpdateUserWeight = async (request: UpdateWeightRequest, jwt: string
 };
 
 export const GetMeals = async (request: GetMealsRequest, jwt: string): Promise<MealResponse[]> => {
-    const response = await fetch(`${API_URL}/meals?dateid=` + request.dateID, {
+    const response = await fetch(`${API_URL}/data/meal?dateid=${request.dateID}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -70,6 +71,7 @@ export const GetMeals = async (request: GetMealsRequest, jwt: string): Promise<M
 
     if (response.ok) {
         const data = await response.json();
+        console.log('Meals retrieved successfully:', data);
         return data as MealResponse[];
     } else if (response.status === 400) {
         const errorData = await response.text();
@@ -81,7 +83,7 @@ export const GetMeals = async (request: GetMealsRequest, jwt: string): Promise<M
 };
 
 export const UpdateDateWeight = async (request: UpdateDateRequest, jwt: string): Promise<DateResponse> => {
-    const response = await fetch(`${API_URL}/date/update-weight?dateid=` + request.dateID + '&weight=' + request.dailyWeight, {
+    const response = await fetch(`${API_URL}/data/date/update-weight?dateid=` + request.dateID + '&weight=' + request.dailyWeight, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -104,7 +106,7 @@ export const UpdateDateWeight = async (request: UpdateDateRequest, jwt: string):
 };
 
 export const UpdateDateNutrition = async (request: UpdateDateRequest, jwt: string): Promise<DateResponse> => {
-    const response = await fetch(`${API_URL}/date/update-nutrition?dateid=` + request.dateID + '&calories=' + request.dailyCalories + '&protein=' + request.dailyProtein, {
+    const response = await fetch(`${API_URL}/data/date/update-nutrition?dateid=` + request.dateID + '&calories=' + request.dailyCalories + '&protein=' + request.dailyProtein, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -127,7 +129,7 @@ export const UpdateDateNutrition = async (request: UpdateDateRequest, jwt: strin
 };
 
 export const CreateMeal = async (request: CreateMealRequest, jwt: string): Promise<MealResponse> => {
-    const response = await fetch(`${API_URL}/meal`, {
+    const response = await fetch(`${API_URL}/data/meal`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -150,7 +152,7 @@ export const CreateMeal = async (request: CreateMealRequest, jwt: string): Promi
 };
 
 export const DeleteMeal = async (request: DeleteMealRequest, jwt: string): Promise<void> => {
-    const response = await fetch(`${API_URL}/meal/delete?mealid=` + request.mealID, {
+    const response = await fetch(`${API_URL}/data/meal/delete?mealid=` + request.mealID, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
