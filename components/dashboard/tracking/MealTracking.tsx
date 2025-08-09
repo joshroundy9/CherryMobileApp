@@ -14,7 +14,6 @@ function MealTracking({date, loginResponse, setScreen}: {
     const [error, setError] = useState('');
     const [meals, setMeals] = useState<MealResponse[]>([]);
     const [dateResponse, setDateResponse] = useState<DateResponse | null>(null);
-
     const jwt = loginResponse()?.jwt || '';
 
     useEffect(() => {
@@ -74,7 +73,7 @@ function MealTracking({date, loginResponse, setScreen}: {
             </View>
 
             <View className={"flex flex-row justify-between items-center w-full px-4 align-bottom mb-4"}>
-                <RedButton title={'Update Weight'} onPress={handleUpdateWeight} />
+                <RedButton title={`Update Weight: ${Number(dateResponse?.dailyWeight) === 0 ? loginResponse()?.user.weight : dateResponse?.dailyWeight}`} onPress={handleUpdateWeight} />
                 <GoBackButton title={"Go Back"} onPress={handleGoBack} />
             </View>
         </View>
