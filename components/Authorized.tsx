@@ -50,7 +50,7 @@ function Authorized({ children, onLogout, loginResponse, setLoginResponse }: { c
 
     return (
         <View className={"w-full h-full flex flex-col"}>
-            <View className={"w-full flex flex-row justify-between items-center p-4"}>
+            <View className={"w-full flex flex-row justify-between items-center px-4 pt-4"}>
                 <SmallLogo />
                 <Text className="text-red font-jomhuria text-4xl">{loginResponse()?.user.username}</Text>
             </View>

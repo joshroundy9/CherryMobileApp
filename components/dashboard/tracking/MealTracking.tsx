@@ -6,7 +6,7 @@ import {
     CreateMeal,
     DeleteMeal,
     GetMeals,
-    GetOrCreateDate,
+    GetOrCreateDate, UpdateDateNutrition,
     UpdateDateWeight,
     UpdateUserWeight
 } from '../../../clients/TrackingClient';
@@ -65,10 +65,23 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
     };
 
     const handleGoBack = () => {
-        setScreen({newScreen: 'calendar'});
+        updateDateNutrition().then( () => {
+            setScreen({newScreen: 'calendar'});
+            }
+        );
+
+    }
+
+    const getTotalCalories = ({mealList} : {mealList: MealResponse[]}) => {
+        return mealList.reduce((total, meal) => total + meal.mealCalories, 0);
+    }
+
+    const getTotalProtein = ({mealList} : {mealList: MealResponse[]}) => {
+        return mealList.reduce((total, meal) => total + meal.mealProtein, 0);
     }
 
     const createMeal = async (mealName: string) => {
+        await updateDateNutrition();
         CreateMeal({
             mealName: mealName,
             userID: `${loginResponse()?.user.userID}`,
@@ -99,6 +112,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
     }
     const deleteMeal = async (mealID: string) => {
         try {
+            await updateDateNutrition();
             await DeleteMeal({
                 userID: loginResponse()?.user.userID || '',
                 mealID: mealID
@@ -109,6 +123,32 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                 setError(e.message);
             } else {
                 setError('An unexpected error occurred while deleting the meal.');
+            }
+        }
+    }
+
+    const updateDateNutrition = async () => {
+        if (!dateResponse) {
+            setError('Date response is not available');
+            return;
+        }
+        try {
+            await UpdateDateNutrition({
+                dateID: dateResponse.dateID,
+                userID: loginResponse()?.user.userID || '',
+                dailyCalories: getTotalCalories({mealList: meals}).toString(),
+                dailyProtein: getTotalProtein({mealList: meals}).toString()
+            }, jwt);
+            setDateResponse({
+                ...dateResponse,
+                dailyCalories: getTotalCalories({mealList: meals}).toString(),
+                dailyProtein: getTotalProtein({mealList: meals}).toString()
+            });
+        } catch (e) {
+            if (e instanceof Error) {
+                setError(e.message);
+            } else {
+                setError('An unexpected error occurred while updating the date nutrition.');
             }
         }
     }
@@ -129,7 +169,16 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                     userID: loginResponse()?.user.userID || '',
                     weight: weight
                 }, jwt);
-
+                const prev = loginResponse();
+                if (prev) {
+                    setLoginResponse({
+                        ...prev,
+                        user: {
+                            ...prev.user,
+                            weight: updatedUser.weight
+                        }
+                    });
+                }
             }
             setDateResponse({
                 ...dateResponse,
@@ -153,12 +202,13 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
         return (
             <TextEntry
                 properties={{
-                    header: `Update Weight: ${Number(dateResponse?.dailyWeight) === 0 ? loginResponse()?.user.weight : dateResponse?.dailyWeight}`,
+                    header: `Update Weight: ${Number(dateResponse?.dailyWeight) === 0 ? loginResponse()?.user.weight : dateResponse?.dailyWeight} lbs`,
                     placeholder: `Weight (LBS)`,
                     onSubmit: updateWeight,
                     onCancel: () => {
                         setUpdatingWeight(false);
-                    }
+                    },
+                    buttonText: 'Update Weight'
                 }}
             />
         );
@@ -174,7 +224,8 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                     onCancel: () => {
                         setAddingMeal(false);
                         setAddMealTime("");
-                    }
+                    },
+                    buttonText: 'Create Meal'
                 }}
             />
         );
@@ -225,7 +276,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                 {intervals.map((interval, idx) => {
                     const meal = getMealForInterval(interval.start, interval.end);
                     return (
-                        <View key={idx} className="border-b border-gray-700 w-full flex flex-row items-center justify-between px-2 pb-1 pt-2 background-gray">
+                        <View key={idx} className="border-b border-b-gray-700 w-full flex flex-row items-center justify-between px-2 pb-1 pt-2 background-gray">
                             {meal ? (
                                 <View className={"flex w-full flex-row justify-between px-0.5"}>
                                     <TouchableOpacity className={"flex flex-row gap-1"} onPress={() => setScreen({newScreen: 'mealitem', newDate: date, mealID: meal.mealID})}>
@@ -263,11 +314,23 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                         </View>
                     );
                 })}
+                <View className={"flex flex-row justify-between w-full px-4 mt-1"}>
+                    <Text className={"font-jomhuria text-white text-4xl ml-7"}>Daily Totals</Text>
+                    <View className={"flex flex-row mt-0.5"}>
+                        <Text className={"mr-6 font-jomhuria text-white text-3xl text-right"}>
+                            {getTotalCalories({mealList: meals})}
+                        </Text>
+                        <Text className={"w-20 mr-6 font-jomhuria text-white text-3xl text-right"}>
+                            {getTotalProtein({mealList: meals})}g
+                        </Text>
+                    </View>
+                </View>
             </View>
+
             {error && <Text className={"text-red text-3xl font-jomhuria text-center"}>{error}</Text>}
 
             <View className={"flex flex-row justify-between items-center w-full px-4 align-bottom mb-4"}>
-                <RedButton title={` Update Weight: ${Number(dateResponse?.dailyWeight) === 0 ? loginResponse()?.user.weight : dateResponse?.dailyWeight} `} onPress={handleUpdateWeight} />
+                <RedButton title={` Update Weight: ${Number(dateResponse?.dailyWeight) === 0 ? loginResponse()?.user.weight : dateResponse?.dailyWeight} lbs `} onPress={handleUpdateWeight} />
                 <GoBackButton title={"Go Back"} onPress={handleGoBack} />
             </View>
         </View>

@@ -7,6 +7,7 @@ interface TextEntryProps {
     onCancel: () => void;
     header: string;
     placeholder?: string;
+    buttonText?: string;
 }
 
 function TextEntry({ properties }: {properties: TextEntryProps}) {
@@ -35,7 +36,7 @@ function TextEntry({ properties }: {properties: TextEntryProps}) {
                             onChangeText={handleType}
                             onSubmitEditing={handleSubmit}
                             placeholder={properties.placeholder}
-                            className="placeholder:text-white text-white font-jomhuria text-3xl mt-4 mb-2 background-light-gray w-full rounded"
+                            className="placeholder:text-white text-white font-jomhuria text-3xl mt-4 pt-4 mb-2 background-light-gray w-full rounded"
                             autoFocus
                             returnKeyType="done"
                         />
@@ -44,7 +45,7 @@ function TextEntry({ properties }: {properties: TextEntryProps}) {
                                 <Text className={"text-red font-jomhuria text-3xl"}>Clear</Text>
                             </TouchableOpacity>
                             <View className={"flex flex-row gap-2"}>
-                                <RedButton title={" Add Meal "} onPress={handleSubmit}/>
+                                <RedButton title={properties.buttonText || ''} onPress={handleSubmit}/>
                                 <GoBackButton title={" Cancel "} onPress={properties.onCancel} />
                             </View>
                         </View>
