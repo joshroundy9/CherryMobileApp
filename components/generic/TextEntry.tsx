@@ -82,7 +82,7 @@ export function ManualMealEntry({ properties }: {properties: MealEntryProps}) {
                     <Text className={"text-red font-jomhuria text-3xl"}>Clear</Text>
                 </TouchableOpacity>
                 <View className={"flex flex-row gap-2"}>
-                    <RedButton title={" Add Meal Item "} onPress={handleSubmit}/>
+                    <RedButton title={" Add Meal Item "} onPress={handleSubmit} disabled={loading}/>
                     <GoBackButton title={" Cancel "} onPress={properties.onCancel} />
                 </View>
             </View>
@@ -135,7 +135,7 @@ function TextEntry({ properties }: {properties: TextEntryProps}) {
                                 <Text className={"text-red font-jomhuria text-3xl"}>Clear</Text>
                             </TouchableOpacity>
                             <View className={"flex flex-row gap-2"}>
-                                <RedButton title={properties.buttonText || ''} onPress={handleSubmit}/>
+                                <RedButton title={properties.buttonText || ''} onPress={handleSubmit} disabled={loading}/>
                                 <GoBackButton title={" Cancel "} onPress={properties.onCancel} />
                             </View>
                         </View>

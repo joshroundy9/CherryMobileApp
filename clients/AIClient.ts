@@ -24,3 +24,26 @@ export const GetTextNutritionData = async (foodEntry: string, jwt: string): Prom
         throw new Error('An unexpected error occurred while retrieving nutrition data.');
     }
 };
+
+export const GetImageNutritionData = async (imageBase64: string, jwt: string): Promise<AIDataResponse> => {
+    console.log('Getting image nutrition data.');
+    const response = await fetch(`${API_URL}/ai/imagenutritiondata`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + jwt,
+        },
+        body: json.stringify({ imageBase64: imageBase64 }),
+    });
+
+    if (response.ok) {
+        const data = await response.json();
+        return data as AIDataResponse;
+    } else if (response.status === 400) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Invalid image data');
+    } else {
+        console.error('Failed to retrieve image nutrition data:', response.status, response.text());
+        throw new Error('An unexpected error occurred while retrieving image nutrition data.');
+    }
+};

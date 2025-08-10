@@ -335,7 +335,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                 </View>
             </View>
 
-            {error && <Text className={"text-red text-3xl font-jomhuria text-center"}>{error}</Text>}
+            {error && <Text className={"text-red text-3xl font-jomhuria text-center px-2"}>{error}</Text>}
 
             <View className={"flex flex-row justify-between items-center w-full px-4 align-bottom mb-4"}>
                 <RedButton title={` Update Weight: ${Number(dateResponse?.dailyWeight) === 0 ? loginResponse()?.user.weight : dateResponse?.dailyWeight} lbs `} onPress={handleUpdateWeight} />

@@ -64,7 +64,7 @@ function Tracking({loginResponse, setLoginResponse, initialScreen, initialDate}:
                 );
             case 'mealitem':
                 return (
-                    <MealItemTracking setLoginResponse={setLoginResponse} setScreen={changeScreenUpdateDate} loginResponse={loginResponse} mealResponse={mealResponse}/>
+                    <MealItemTracking setScreen={changeScreenUpdateDate} loginResponse={loginResponse} mealResponse={mealResponse}/>
                 );
             default:
                 return null;

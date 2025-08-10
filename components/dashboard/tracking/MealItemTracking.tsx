@@ -1,24 +1,19 @@
 import {Image, Text, TouchableOpacity, View} from 'react-native';
 import {LoginResponse} from "../../../types/Auth";
-import RedButton, {GoBackButton} from "../../generic/Buttons";
+import {GoBackButton} from "../../generic/Buttons";
 import {useState, useEffect} from "react";
 import {
-    CreateMeal, CreateMealItem,
-    DeleteMeal, DeleteMealItem, GetMealItems,
-    GetMeals,
-    GetOrCreateDate, UpdateDateNutrition,
-    UpdateDateWeight, UpdateMealNutrition,
-    UpdateUserWeight
+    CreateMealItem, DeleteMealItem, GetMealItems,
+    UpdateMealNutrition,
 } from '../../../clients/TrackingClient';
-import {DateResponse, MealItemDTO, MealResponse} from "../../../types/Tracking";
+import {MealItemDTO, MealResponse} from "../../../types/Tracking";
 import Loading from "../../generic/Loading";
 import TextEntry, {ManualMealEntry} from "../../generic/TextEntry";
 import {GetTextNutritionData} from "../../../clients/AIClient";
 import RecentsMealEntry from "./RecentsMealEntry";
 
-function MealItemTracking({mealResponse, loginResponse, setLoginResponse, setScreen}: {
+function MealItemTracking({mealResponse, loginResponse, setScreen}: {
     mealResponse: MealResponse,
-    loginResponse: () => LoginResponse | null,
     setLoginResponse: (loginResponse: LoginResponse | null) => void,
     setScreen: ({newScreen, newDate, mealResponse}: {newScreen: string, newDate?: string, mealResponse?: MealResponse}) => void }){
 
@@ -106,6 +101,11 @@ function MealItemTracking({mealResponse, loginResponse, setLoginResponse, setScr
     }
 
     const createMealItem = async (mealItem: MealItemDTO) => {
+        if (mealItems.length >= 8) {
+            setError('You can only add up to 8 meal items per meal. ');
+            setAddingWithAI(false);
+            return;
+        }
         CreateMealItem(mealItem, jwt).then(response => {
             mealItem.itemID = response.itemID;
             mealItem.createdTS = response.createdTS;
@@ -120,7 +120,7 @@ function MealItemTracking({mealResponse, loginResponse, setLoginResponse, setScr
             const newMealItems = [...mealItems, mealItem];
             setMealItems(newMealItems);
             updateMealNutrition(newMealItems);
-            setAddingWithAI(false)
+            setAddingWithAI(false);
         })
     }
     const deleteMealItem = async (mealItemID: string) => {
@@ -164,6 +164,11 @@ function MealItemTracking({mealResponse, loginResponse, setLoginResponse, setScr
     }
 
     if (addingWithAI) {
+        if (mealItems.length >= 8) {
+            setError("You can only add up to 8 meal items per meal. ");
+            setAddingWithAI(false);
+            return null;
+        }
         return (
             <TextEntry
                 properties={{
@@ -179,6 +184,11 @@ function MealItemTracking({mealResponse, loginResponse, setLoginResponse, setScr
         );
     }
     if (addingManually) {
+        if (mealItems.length >= 8) {
+            setError("You can only add up to 8 meal items per meal. ");
+            setAddingManually(false);
+            return null;
+        }
         return (
             <ManualMealEntry properties={{
                 onSubmit: createManualMealItem,
@@ -190,6 +200,11 @@ function MealItemTracking({mealResponse, loginResponse, setLoginResponse, setScr
         );
     }
     if (addingRecents) {
+        if (mealItems.length >= 8) {
+            setError("You can only add up to 8 meal items per meal. ");
+            setAddingRecents(false);
+            return null;
+        }
         return (
             <RecentsMealEntry properties={{
                 onSubmit: createManualMealItem,
@@ -244,6 +259,13 @@ function MealItemTracking({mealResponse, loginResponse, setLoginResponse, setScr
                     );
                 })}
                 <View className={"flex flex-row w-full background-light-gray justify-between items-center px-4 pt-1 background-gray"}>
+                    <TouchableOpacity className={"pb-1"} onPress={() => setAddingManually(true)}>
+                        <Image
+                            className={"pb-1"}
+                            source={require('../../../assets/camera.png')}
+                            style={{ width: 35, height: 35 }}
+                        />
+                    </TouchableOpacity>
                     <TouchableOpacity onPress={() => setAddingWithAI(true)}>
                         <Text className={"text-white font-jomhuria text-5xl"}>AI</Text>
                     </TouchableOpacity>
@@ -264,7 +286,7 @@ function MealItemTracking({mealResponse, loginResponse, setLoginResponse, setScr
                 </View>
             </View>
 
-            {error && <Text className={"text-red text-3xl font-jomhuria text-center"}>{error}</Text>}
+            {error && <Text className={"text-red text-3xl font-jomhuria text-center px-2"}>{error}</Text>}
             <View className={"flex flex-row justify-between w-full px-4 mb-3 border-b border-b-gray-700"}>
                 <Text className={"font-jomhuria text-white text-4xl"}>Meal Totals </Text>
                 <View className={"flex flex-row mt-0.5"}>
