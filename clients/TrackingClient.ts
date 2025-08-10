@@ -267,3 +267,27 @@ export const DeleteMealItem = async (request: DeleteMealItemRequest, jwt: string
         throw new Error('An unexpected error occurred while deleting the meal item.');
     }
 };
+
+export const GetMealItemRecents = async (userID: string, jwt: string): Promise<MealItemDTO[]> => {
+    const response = await fetch(`${API_URL}/data/meal-item/recents`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + jwt,
+            'User-ID': userID,
+        },
+        body: null,
+    });
+
+    if (response.ok) {
+        const data = await response.json();
+        console.log('Meal item recents retrieved successfully:', data);
+        return data as MealItemDTO[];
+    } else if (response.status === 400) {
+        const errorData = await response.text();
+        throw new Error(errorData);
+    } else {
+        console.error('Failed to get meal item recents:', response.status, response.text());
+        throw new Error('An unexpected error occurred while retrieving meal item recents.');
+    }
+};

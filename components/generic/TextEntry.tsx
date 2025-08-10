@@ -11,21 +11,26 @@ interface TextEntryProps {
     maxLength?: number;
 }
 
-interface ManualMealEntryProps {
-    onSubmit: (name: string, calories: string, protein: string) => void;
+interface MealEntryProps {
+    onSubmit: (name: string, calories: string, protein: string, aiGenerated: boolean) => void;
     onCancel: () => void;
 }
 
-export function ManualMealEntry({ properties }: {properties: ManualMealEntryProps}) {
+export function ManualMealEntry({ properties }: {properties: MealEntryProps}) {
     const [text, setText] = useState('');
     const [calories, setCalories] = useState('');
     const [protein, setProtein] = useState('');
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const handleSubmit = () => {
         if(loading) return;
+        if (!text || !calories || !protein) {
+            setError('All fields are required');
+            return;
+        }
         setLoading(true);
-        properties.onSubmit(text, calories, protein);
+        properties.onSubmit(text, calories, protein, false);
         setText('');
         setCalories('');
         setProtein('');
@@ -81,6 +86,7 @@ export function ManualMealEntry({ properties }: {properties: ManualMealEntryProp
                     <GoBackButton title={" Cancel "} onPress={properties.onCancel} />
                 </View>
             </View>
+            {error && <Text className="text-red font-jomhuria text-2xl mt-2 text-center">{error}</Text>}
         </View>
     );
 }
@@ -88,9 +94,14 @@ export function ManualMealEntry({ properties }: {properties: ManualMealEntryProp
 function TextEntry({ properties }: {properties: TextEntryProps}) {
     const [text, setText] = useState('');
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const handleSubmit = () => {
         if(loading) return;
+        if (!text) {
+            setError("All fields are required");
+            return;
+        }
         setLoading(true);
         properties.onSubmit(text);
         setText('');
@@ -128,6 +139,7 @@ function TextEntry({ properties }: {properties: TextEntryProps}) {
                                 <GoBackButton title={" Cancel "} onPress={properties.onCancel} />
                             </View>
                         </View>
+                        {error && <Text className="text-red font-jomhuria text-2xl mt-2 text-center">{error}</Text>}
                     </View>
     );
 }

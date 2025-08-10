@@ -14,6 +14,7 @@ import {DateResponse, MealItemDTO, MealResponse} from "../../../types/Tracking";
 import Loading from "../../generic/Loading";
 import TextEntry, {ManualMealEntry} from "../../generic/TextEntry";
 import {GetTextNutritionData} from "../../../clients/AIClient";
+import RecentsMealEntry from "./RecentsMealEntry";
 
 function MealItemTracking({mealResponse, loginResponse, setLoginResponse, setScreen}: {
     mealResponse: MealResponse,
@@ -27,6 +28,7 @@ function MealItemTracking({mealResponse, loginResponse, setLoginResponse, setScr
     const jwt = loginResponse()?.jwt || '';
     const [addingWithAI, setAddingWithAI] = useState(false);
     const [addingManually, setAddingManually] = useState(false);
+    const [addingRecents, setAddingRecents] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -68,7 +70,7 @@ function MealItemTracking({mealResponse, loginResponse, setLoginResponse, setScr
         return mealItemList.reduce((total, meal) => total + meal.itemProtein, 0);
     }
 
-    const createManualMealItem = (name: string, calories: string, protein: string) => {
+    const createManualMealItem = (name: string, calories: string, protein: string, aiGenerated: boolean) => {
         createMealItem({
             itemName: name,
             itemCalories: parseInt(calories, 10),
@@ -76,25 +78,31 @@ function MealItemTracking({mealResponse, loginResponse, setLoginResponse, setScr
             mealID: mealResponse.mealID,
             dateID: mealResponse.dateID,
             userID: loginResponse()?.user.userID || '',
-            aiGenerated: false
+            aiGenerated: aiGenerated
         }).then(() => {
             setAddingManually(false);
+            setAddingRecents(false);
         })
     }
 
     const createMealItemWithAI = async (mealName: string) => {
         await GetTextNutritionData(mealName, jwt)
             .then((response) => {
-                const mealItem: MealItemDTO = {
-                    itemName: mealName,
-                    itemCalories: response.calories,
-                    itemProtein: response.protein,
-                    mealID: mealResponse.mealID,
-                    dateID: mealResponse.dateID,
-                    userID: loginResponse()?.user.userID || '',
-                    aiGenerated: true
-                };
-                createMealItem(mealItem);
+                if (response.isValidEntry) {
+                    const mealItem: MealItemDTO = {
+                        itemName: mealName,
+                        itemCalories: response.calories,
+                        itemProtein: response.protein,
+                        mealID: mealResponse.mealID,
+                        dateID: mealResponse.dateID,
+                        userID: loginResponse()?.user.userID || '',
+                        aiGenerated: true
+                    };
+                    createMealItem(mealItem);
+                } else {
+                    setError('AI could not generate a valid meal item. Please try again with a different description.');
+                    setAddingWithAI(false);
+                }
             })
     }
 
@@ -177,6 +185,19 @@ function MealItemTracking({mealResponse, loginResponse, setLoginResponse, setScr
             }/>
         );
     }
+    if (addingRecents) {
+        return (
+            <RecentsMealEntry properties={{
+                onSubmit: createManualMealItem,
+                onCancel: () => {
+                    setAddingRecents(false);
+                },
+                userID: loginResponse()?.user.userID || '',
+                jwt: jwt
+            }
+            }/>
+        );
+    }
 
     return (
         <View className={"w-full h-full flex flex-col items-center justify-between"}>
@@ -229,6 +250,13 @@ function MealItemTracking({mealResponse, loginResponse, setLoginResponse, setScr
                             style={{ width: 35, height: 35 }}
                         />
                     </TouchableOpacity>
+                    <TouchableOpacity className={"pb-1"} onPress={() => setAddingRecents(true)}>
+                        <Image
+                            className={"pb-1"}
+                            source={require('../../../assets/recents.png')}
+                            style={{ width: 40, height: 40 }}
+                        />
+                    </TouchableOpacity>
                 </View>
             </View>
 
@@ -236,9 +264,9 @@ function MealItemTracking({mealResponse, loginResponse, setLoginResponse, setScr
             <View className={"flex flex-row justify-between w-full px-4 mb-3 border-b border-b-gray-700"}>
                 <Text className={"font-jomhuria text-white text-4xl"}>Meal Totals </Text>
                 <View className={"flex flex-row mt-0.5"}>
-                    <Text className={"mr-6 font-jomhuria text-white text-4xl text-right"}>
-                        {getTotalCalories({mealItemList: mealItems})} Calories </Text>
-                    <Text className={"w-28 font-jomhuria text-white text-4xl text-right"}>
+                    <Text className={"mr-2 font-jomhuria text-white text-4xl text-right"}>
+                        {getTotalCalories({mealItemList: mealItems})} kcal </Text>
+                    <Text className={"w-40 font-jomhuria text-white text-4xl text-right"}>
                         {getTotalProtein({mealItemList: mealItems})}g Protein
                     </Text>
                 </View>
