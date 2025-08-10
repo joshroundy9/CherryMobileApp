@@ -18,7 +18,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
     date: string,
     loginResponse: () => LoginResponse | null,
     setLoginResponse: (loginResponse: LoginResponse | null) => void,
-    setScreen: ({newScreen, newDate}: {newScreen: string, newDate?: string, mealID?: string}) => void }){
+    setScreen: ({newScreen, newDate, mealResponse}: {newScreen: string, newDate?: string, mealResponse?: MealResponse}) => void }){
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -208,7 +208,8 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                     onCancel: () => {
                         setUpdatingWeight(false);
                     },
-                    buttonText: 'Update Weight'
+                    buttonText: 'Update Weight',
+                    maxLength: 4
                 }}
             />
         );
@@ -225,7 +226,8 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                         setAddingMeal(false);
                         setAddMealTime("");
                     },
-                    buttonText: 'Create Meal'
+                    buttonText: 'Create Meal',
+                    maxLength: 30
                 }}
             />
         );
@@ -244,17 +246,23 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
     const getMealForInterval = (start: number, end: number) => {
         return meals.find(meal => {
             // Assume meal.time is a string like 'HH:mm' or Date
+            if (!meal.time || typeof meal.time !== 'string') return false;
             let mealHour = parseInt(meal.time.split(':')[0], 10);
             return mealHour >= start && mealHour < end;
         });
     };
+
+    // Defensive: Ensure date is a valid string before splitting
+    const [year, month, day] = (typeof date === 'string' && date.includes('-'))
+        ? date.split('-').map(Number)
+        : [NaN, NaN, NaN];
 
     return (
         <View className={"w-full h-full flex flex-col items-center justify-between"}>
             <View className={"w-full flex flex-row justify-between items-center px-4"}>
                 <Text className={"font-jomhuria text-4xl text-white"}>
                     {(() => {
-                        const [year, month, day] = date.split('-').map(Number);
+                        if (isNaN(year) || isNaN(month) || isNaN(day)) return "Invalid date";
                         const dateObj = new Date(year, month - 1, day); // month - 1 because Date months are 0-indexed
                         const dayNum = dateObj.getDate();
                         const monthName = dateObj.toLocaleDateString('en-US', { month: 'long' });
@@ -279,7 +287,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                         <View key={idx} className="border-b border-b-gray-700 w-full flex flex-row items-center justify-between px-2 pb-1 pt-2 background-gray">
                             {meal ? (
                                 <View className={"flex w-full flex-row justify-between px-0.5"}>
-                                    <TouchableOpacity className={"flex flex-row gap-1"} onPress={() => setScreen({newScreen: 'mealitem', newDate: date, mealID: meal.mealID})}>
+                                    <TouchableOpacity className={"flex flex-row gap-1"} onPress={() => setScreen({newScreen: 'mealitem', newDate: date, mealResponse: meal})}>
                                         <Image
                                             source={require('../../../assets/edit.png')}
                                             style={{ width: 25, height: 25 }}
@@ -315,7 +323,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                     );
                 })}
                 <View className={"flex flex-row justify-between w-full px-4 mt-1"}>
-                    <Text className={"font-jomhuria text-white text-4xl ml-7"}>Daily Totals</Text>
+                    <Text className={"font-jomhuria text-white text-4xl"}>Daily Totals</Text>
                     <View className={"flex flex-row mt-0.5"}>
                         <Text className={"mr-6 font-jomhuria text-white text-3xl text-right"}>
                             {getTotalCalories({mealList: meals})}
@@ -338,3 +346,4 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
 }
 
 export default MealTracking;
+

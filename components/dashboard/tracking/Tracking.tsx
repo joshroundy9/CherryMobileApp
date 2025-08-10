@@ -4,13 +4,21 @@ import Calendar from "./Calendar";
 import AccountInformation from "../AccountInformation";
 import {LoginResponse} from "../../../types/Auth";
 import MealTracking from "./MealTracking";
+import MealItemTracking from "./MealItemTracking";
+import {MealResponse} from "../../../types/Tracking";
 
 function Tracking({loginResponse, setLoginResponse, initialScreen, initialDate}: {loginResponse: () => LoginResponse | null, setLoginResponse: (loginResponse: LoginResponse | null) => void, initialScreen: string, initialDate?: string}) {
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
-
     const [screen, setScreen] = useState(initialScreen);
     const [date, setDate] = useState(initialDate);
+    const [mealResponse, setMealResponse] = useState<MealResponse>({
+        dateID: "",
+        mealCalories: 0,
+        mealID: "",
+        mealName: "",
+        mealProtein: 0,
+        time: "",
+        userID: ""
+    });
 
     const fadeAnim = useRef(new Animated.Value(1)).current;
 
@@ -33,10 +41,13 @@ function Tracking({loginResponse, setLoginResponse, initialScreen, initialDate}:
         setTimeout(() => setScreen(newScreen), 150);
     };
 
-    const changeScreenUpdateDate = ({newScreen, newDate, mealID}: {newScreen: string, newDate?: string, mealID?: string}) => {
+    const changeScreenUpdateDate = ({newScreen, newDate, mealResponse}: {newScreen: string, newDate?: string, mealResponse?: MealResponse}) => {
         if (newScreen === screen && newDate === date) return;
         if (newDate) {
             setDate(newDate);
+        }
+        if (mealResponse) {
+            setMealResponse(mealResponse);
         }
         changeScreen(newScreen);
     };
@@ -53,7 +64,7 @@ function Tracking({loginResponse, setLoginResponse, initialScreen, initialDate}:
                 );
             case 'mealitem':
                 return (
-                    <Text className={"text-white"}>meal item panel</Text>
+                    <MealItemTracking setLoginResponse={setLoginResponse} setScreen={changeScreenUpdateDate} loginResponse={loginResponse} mealResponse={mealResponse}/>
                 );
             default:
                 return null;

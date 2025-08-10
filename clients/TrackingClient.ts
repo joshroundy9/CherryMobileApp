@@ -1,15 +1,15 @@
 import {
     CreateMealRequest,
     DateRequest,
-    DateResponse, DeleteMealRequest,
-    GetMealsRequest,
+    DateResponse, DeleteMealItemRequest, DeleteMealRequest, GetMealItemsRequest,
+    GetMealsRequest, MealItemDTO,
     MealResponse,
-    UpdateDateRequest,
+    UpdateDateRequest, UpdateMealRequest,
     UpdateWeightRequest
 } from "../types/Tracking";
 import {UserResponse} from "../types/Auth";
 
-const API_URL = 'https://cherrywebserver.joshroundy.dev:8080';
+export const API_URL = 'https://cherrywebserver.joshroundy.dev:8080';
 
 export const GetOrCreateDate = async (request: DateRequest, jwt: string): Promise<DateResponse> => {
     const response = await fetch(`${API_URL}/data/date/from-user-and-date?date=${request.date}`, {
@@ -128,9 +128,31 @@ export const UpdateDateNutrition = async (request: UpdateDateRequest, jwt: strin
     }
 };
 
+export const UpdateMealNutrition = async (request: UpdateMealRequest, jwt: string): Promise<MealResponse> => {
+    const response = await fetch(`${API_URL}/data/meal/update-nutrition?mealid=` + request.mealID + '&calories=' + request.calories + '&protein=' + request.protein, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + jwt,
+            'User-ID': request.userID,
+        },
+        body: null,
+    });
+
+    if (response.ok) {
+        const data = await response.json();
+        return data as MealResponse;
+    } else if (response.status === 400) {
+        const errorData = await response.text();
+        throw new Error(errorData);
+    } else {
+        console.error('Failed to update date nutrition:', response.status, response.text());
+        throw new Error('An unexpected error occurred while updating date nutrition.');
+    }
+};
+
 export const CreateMeal = async (request: CreateMealRequest, jwt: string): Promise<MealResponse> => {
     console.log('Creating meal with request:', request);
-    console.log('JWT:', jwt);
     const response = await fetch(`${API_URL}/data/meal`, {
         method: 'POST',
         headers: {
@@ -172,5 +194,76 @@ export const DeleteMeal = async (request: DeleteMealRequest, jwt: string): Promi
     } else {
         console.error('Failed to delete meal:', response.status, response.text());
         throw new Error('An unexpected error occurred while deleting the meal.');
+    }
+};
+
+export const GetMealItems = async (request: GetMealItemsRequest, jwt: string): Promise<MealItemDTO[]> => {
+    const response = await fetch(`${API_URL}/data/meal-item?mealid=${request.mealID}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + jwt,
+            'User-ID': request.userID,
+        },
+        body: null,
+    });
+
+    if (response.ok) {
+        const data = await response.json();
+        console.log('Meal items retrieved successfully:', data);
+        return data as MealItemDTO[];
+    } else if (response.status === 400) {
+        const errorData = await response.text();
+        throw new Error(errorData);
+    } else {
+        console.error('Failed to get meal items:', response.status, response.text());
+        throw new Error('An unexpected error occurred while retrieving meal items.');
+    }
+};
+
+export const CreateMealItem = async (request: MealItemDTO, jwt: string): Promise<MealItemDTO> => {
+    console.log('Creating meal item with request:', request);
+    const response = await fetch(`${API_URL}/data/meal-item`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + jwt,
+            'User-ID': request.userID,
+        },
+        body: JSON.stringify(request),
+    });
+
+    if (response.ok) {
+        const data = await response.json();
+        return data as MealItemDTO;
+    } else if (response.status === 400) {
+        const errorData = await response.json();
+        console.log('Error data:', errorData);
+        throw new Error(errorData.error || 'Invalid request data');
+    } else {
+        console.error('Failed to create meal item:', response.status, response.text());
+        throw new Error('An unexpected error occurred while creating the meal item.');
+    }
+};
+
+export const DeleteMealItem = async (request: DeleteMealItemRequest, jwt: string): Promise<void> => {
+    const response = await fetch(`${API_URL}/data/meal-item/delete?mealitemid=` + request.mealItemID, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + jwt,
+            'User-ID': request.userID,
+        },
+        body: null,
+    });
+
+    if (response.ok) {
+        return;
+    } else if (response.status === 400) {
+        const errorData = await response.text();
+        throw new Error(errorData);
+    } else {
+        console.error('Failed to delete meal item:', response.status, response.text());
+        throw new Error('An unexpected error occurred while deleting the meal item.');
     }
 };

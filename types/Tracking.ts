@@ -14,12 +14,12 @@ export interface DateResponse {
 
 export interface UpdateWeightRequest {
     userID: string;
-    weight: string; // New weight to update
+    weight: string;
 }
 
 export interface GetMealsRequest {
     userID: string;
-    dateID: string; // ID of the date for which meals are requested
+    dateID: string;
 }
 
 export interface MealResponse {
@@ -32,22 +32,51 @@ export interface MealResponse {
     time: string;
 }
 
+export interface UpdateMealRequest {
+    userID: string;
+    mealID: string;
+    calories: string;
+    protein: string;
+}
+
+export interface GetMealItemsRequest {
+    mealID: string;
+    userID: string;
+}
+
+export interface DeleteMealItemRequest {
+    userID: string;
+    mealItemID: string;
+}
+
+export interface MealItemDTO {
+    itemID?: string;
+    mealID: string;
+    dateID: string;
+    userID: string;
+    itemName: string;
+    itemCalories: number;
+    itemProtein: number;
+    aiGenerated: boolean;
+    createdTS?: string;
+}
+
 export interface UpdateDateRequest {
     userID: string;
-    dateID: string; // ID of the date to update
-    dailyWeight?: string; // Optional new weight for the date
-    dailyCalories?: string; // Optional new calories for the date
-    dailyProtein?: string; // Optional new protein for the date
+    dateID: string;
+    dailyWeight?: string;
+    dailyCalories?: string;
+    dailyProtein?: string;
 }
 
 export interface CreateMealRequest {
     mealName: string;
     userID: string;
-    dateID: string; // ID of the date to which the meal belongs
+    dateID: string;
     time: string; // Time of the meal in ISO 8601 format
 }
 
 export interface DeleteMealRequest {
     userID: string;
-    mealID: string; // ID of the meal to delete
+    mealID: string;
 }
