@@ -62,7 +62,11 @@ function RecentsMealEntry({ properties }: {properties: ManualMealEntryProps}) {
                                 source={require('../../../assets/plus.png')}
                                 style={{ width: 32, height: 32 }}
                             />
-                            <Text className={"text-red font-jomhuria text-4xl"}>{item.itemName} </Text>
+                            <Text className={"text-red font-jomhuria text-4xl w-52"}
+                            numberOfLines={1}
+                            ellipsizeMode={"tail"}>
+                                {item.itemName}
+                            </Text>
                         </View>
                         <View className={"flex flex-row"}>
                             <Text className={"text-white font-jomhuria text-4xl mr-4"}>{item.itemCalories} </Text>

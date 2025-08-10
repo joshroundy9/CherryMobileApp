@@ -55,11 +55,10 @@ function MealItemTracking({mealResponse, loginResponse, setLoginResponse, setScr
     }, [mealResponse, jwt]);
 
     const handleGoBack = () => {
-        updateMealNutrition().then( () => {
+        updateMealNutrition(mealItems).then(() => {
                 setScreen({newScreen: 'meal'});
             }
         );
-
     }
 
     const getTotalCalories = ({mealItemList} : {mealItemList: MealItemDTO[]}) => {
@@ -107,7 +106,6 @@ function MealItemTracking({mealResponse, loginResponse, setLoginResponse, setScr
     }
 
     const createMealItem = async (mealItem: MealItemDTO) => {
-        await updateMealNutrition();
         CreateMealItem(mealItem, jwt).then(response => {
             mealItem.itemID = response.itemID;
             mealItem.createdTS = response.createdTS;
@@ -118,9 +116,12 @@ function MealItemTracking({mealResponse, loginResponse, setLoginResponse, setScr
                 setError('An unexpected error occurred while creating the meal item.');
             }
             return;
+        }).finally(() => {
+            const newMealItems = [...mealItems, mealItem];
+            setMealItems(newMealItems);
+            updateMealNutrition(newMealItems);
+            setAddingWithAI(false)
         })
-        setMealItems([...mealItems, mealItem]);
-        setAddingWithAI(false);
     }
     const deleteMealItem = async (mealItemID: string) => {
         try {
@@ -134,17 +135,20 @@ function MealItemTracking({mealResponse, loginResponse, setLoginResponse, setScr
             } else {
                 setError('An unexpected error occurred while deleting the meal.');
             }
+        } finally {
+            const mealItemList = mealItems.filter(meal => meal.itemID !== mealItemID);
+            await updateMealNutrition(mealItemList);
+            setMealItems(mealItemList);
         }
-        setMealItems(mealItems.filter(meal => meal.itemID !== mealItemID));
     }
 
-    const updateMealNutrition = async () => {
+    const updateMealNutrition = async (mealItemList: MealItemDTO[]) => {
         try {
             await UpdateMealNutrition({
                 mealID: mealResponse.mealID,
                 userID: loginResponse()?.user.userID || '',
-                calories: getTotalCalories({mealItemList: mealItems}).toString(),
-                protein: getTotalProtein({mealItemList: mealItems}).toString()
+                calories: getTotalCalories({mealItemList: mealItemList}).toString(),
+                protein: getTotalProtein({mealItemList: mealItemList}).toString()
             }, jwt);
         } catch (e) {
             if (e instanceof Error) {
