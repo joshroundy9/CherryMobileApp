@@ -33,7 +33,7 @@ export const GetImageNutritionData = async (imageBase64: string, jwt: string): P
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + jwt,
         },
-        body: json.stringify({ imageBase64: imageBase64 }),
+        body: JSON.stringify({ imageBase64: imageBase64 }),
     });
 
     if (response.ok) {

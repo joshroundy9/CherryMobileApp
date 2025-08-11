@@ -9,12 +9,13 @@ import {
 import {MealItemDTO, MealResponse} from "../../../types/Tracking";
 import Loading from "../../generic/Loading";
 import TextEntry, {ManualMealEntry} from "../../generic/TextEntry";
-import {GetTextNutritionData} from "../../../clients/AIClient";
+import {GetTextNutritionData, GetImageNutritionData} from "../../../clients/AIClient";
 import RecentsMealEntry from "./RecentsMealEntry";
+import * as ImagePicker from 'expo-image-picker';
 
 function MealItemTracking({mealResponse, loginResponse, setScreen}: {
     mealResponse: MealResponse,
-    setLoginResponse: (loginResponse: LoginResponse | null) => void,
+    loginResponse: () => LoginResponse | null,
     setScreen: ({newScreen, newDate, mealResponse}: {newScreen: string, newDate?: string, mealResponse?: MealResponse}) => void }){
 
     const [loading, setLoading] = useState(false);
@@ -24,8 +25,12 @@ function MealItemTracking({mealResponse, loginResponse, setScreen}: {
     const [addingWithAI, setAddingWithAI] = useState(false);
     const [addingManually, setAddingManually] = useState(false);
     const [addingRecents, setAddingRecents] = useState(false);
+    const [addingWithImage, setAddingWithImage] = useState(false);
 
     useEffect(() => {
+        if (addingWithImage) {
+            handlePickImage();
+        }
         const fetchData = async () => {
             setLoading(true);
             try {
@@ -47,7 +52,7 @@ function MealItemTracking({mealResponse, loginResponse, setScreen}: {
         };
 
         fetchData();
-    }, [mealResponse, jwt]);
+    }, [mealResponse, jwt, addingWithImage]);
 
     const handleGoBack = () => {
         updateMealNutrition(mealItems).then(() => {
@@ -106,6 +111,7 @@ function MealItemTracking({mealResponse, loginResponse, setScreen}: {
             setAddingWithAI(false);
             return;
         }
+        setLoading(true);
         CreateMealItem(mealItem, jwt).then(response => {
             mealItem.itemID = response.itemID;
             mealItem.createdTS = response.createdTS;
@@ -115,12 +121,14 @@ function MealItemTracking({mealResponse, loginResponse, setScreen}: {
             } else {
                 setError('An unexpected error occurred while creating the meal item.');
             }
+            setLoading(false);
             return;
         }).finally(() => {
             const newMealItems = [...mealItems, mealItem];
             setMealItems(newMealItems);
             updateMealNutrition(newMealItems);
             setAddingWithAI(false);
+            setLoading(false);
         })
     }
     const deleteMealItem = async (mealItemID: string) => {
@@ -159,13 +167,57 @@ function MealItemTracking({mealResponse, loginResponse, setScreen}: {
         }
     }
 
+    const handlePickImage = async () => {
+        if (mealItems.length >= 8) {
+            setError('You can only add up to 8 meal items per meal. ');
+            setAddingWithImage(false);
+            return;
+        }
+        setLoading(true);
+        setError('');
+        try {
+            const result = await ImagePicker.launchCameraAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                base64: true,
+                quality: 1,
+                cameraType: ImagePicker.CameraType.back,
+            });
+            if (!result.canceled && result.assets && result.assets.length > 0 && result.assets[0].base64) {
+                const response = await GetImageNutritionData(result.assets[0].base64, jwt);
+                if (response.isValidEntry) {
+                    const mealItem: MealItemDTO = {
+                        itemName: response.foodEntry || 'Image Meal',
+                        itemCalories: response.calories,
+                        itemProtein: response.protein,
+                        mealID: mealResponse.mealID,
+                        dateID: mealResponse.dateID,
+                        userID: loginResponse()?.user.userID || '',
+                        aiGenerated: true
+                    };
+                    await createMealItem(mealItem);
+                } else {
+                    setError('AI could not generate a valid meal item from the image. Please try again with a different image.');
+                }
+            }
+        } catch (e) {
+            if (e instanceof Error) {
+                setError(e.message);
+            } else {
+                setError('An unexpected error occurred while processing the image.');
+            }
+        } finally {
+            setLoading(false);
+            setAddingWithImage(false);
+        }
+    };
+
     if (loading) {
         return <Loading/>;
     }
 
     if (addingWithAI) {
         if (mealItems.length >= 8) {
-            setError("You can only add up to 8 meal items per meal. ");
+            setError('You can only add up to 8 meal items per meal. ');
             setAddingWithAI(false);
             return null;
         }
@@ -217,6 +269,16 @@ function MealItemTracking({mealResponse, loginResponse, setScreen}: {
             }/>
         );
     }
+    if (addingWithImage) {
+        if (mealItems.length >= 8) {
+            setError('You can only add up to 8 meal items per meal. ');
+            setAddingWithImage(false);
+            return null;
+        }
+        return (
+            <Loading/>
+        );
+    }
 
     return (
         <View className={"w-full h-full flex flex-col items-center justify-between"}>
@@ -259,7 +321,7 @@ function MealItemTracking({mealResponse, loginResponse, setScreen}: {
                     );
                 })}
                 <View className={"flex flex-row w-full background-light-gray justify-between items-center px-4 pt-1 background-gray"}>
-                    <TouchableOpacity className={"pb-1"} onPress={() => setAddingManually(true)}>
+                    <TouchableOpacity className={"pb-1"} onPress={() => setAddingWithImage(true)}>
                         <Image
                             className={"pb-1"}
                             source={require('../../../assets/camera.png')}
