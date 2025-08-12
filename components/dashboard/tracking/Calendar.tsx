@@ -140,7 +140,7 @@ function Calendar({loginResponse, setScreen}: {
                     {weeks}
                 </View>
 
-                <View className={"flex flex-row justify-between w-full"}>
+                <View className={"flex flex-row justify-between w-full mb-8"}>
                     <TouchableOpacity onPress={() => handleCurrentDate()}>
                         <Text className={"font-jomhuria text-3xl text-red pt-1"}>Reset</Text>
                     </TouchableOpacity>
@@ -149,7 +149,7 @@ function Calendar({loginResponse, setScreen}: {
             </View>
 
             {/* Error and loading states */}
-            {error && <Text className="text-red-500 text-center mb-2">{error}</Text>}
+            {error && <Text className="text-red-500 text-center mb-4">{error}</Text>}
             {loading && <Text className="text-blue-500 text-center mb-4">Loading...</Text>}
         </ScrollView>
     );

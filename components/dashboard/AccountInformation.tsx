@@ -1,11 +1,12 @@
-import {View, Text, Linking, TouchableOpacity, Image} from "react-native";
+import {View, Text, Linking, TouchableOpacity, Image, ScrollView} from "react-native";
 import {LoginResponse} from "../../types/Auth";
 import RedButton from "../generic/Buttons";
 
 function AccountInformation({ loginResponse, onLogout } : {loginResponse: () => LoginResponse | null, onLogout: () => void}) {
     // @ts-ignore
     return (
-        <View className={"w-full h-full flex flex-col items-center justify-start text-white pl-4 pr-4"}>
+        <ScrollView className={"w-full h-full flex flex-col text-white pl-4 pr-4"}
+        contentContainerStyle={{alignContent: 'center', justifyContent: 'flex-start', flexGrow: 1}}>
             <Text className={"text-white font-jomhuria text-5xl"}>Account Information</Text>
             <View className={"h-full w-full flex flex-col items-start justify-start mt-2"}>
                 <Text className={"text-white font-jomhuria text-3xl pl-1"}>Username</Text>
@@ -64,7 +65,7 @@ function AccountInformation({ loginResponse, onLogout } : {loginResponse: () => 
                     </View>
                 </View>
             </View>
-        </View>
+        </ScrollView>
     );
 }
 

@@ -1,4 +1,4 @@
-import {Image, Text, TouchableOpacity, View} from 'react-native';
+import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {LoginResponse} from "../../../types/Auth";
 import {GoBackButton} from "../../generic/Buttons";
 import {useState, useEffect} from "react";
@@ -281,7 +281,8 @@ function MealItemTracking({mealResponse, loginResponse, setScreen}: {
     }
 
     return (
-        <View className={"w-full h-full flex flex-col items-center justify-between"}>
+        <ScrollView className={"w-full h-full flex flex-col"}
+        contentContainerStyle={{alignItems: 'center', justifyContent: 'space-between'}}>
             <View className={"w-full flex flex-row justify-between items-center pl-4 pr-2"}>
                 <Text className={"font-jomhuria text-4xl text-white"}>{mealResponse.mealName} </Text>
                 <Text className={"font-jomhuria text-4xl text-white"}>Add Meal Items </Text>
@@ -298,9 +299,9 @@ function MealItemTracking({mealResponse, loginResponse, setScreen}: {
                     return (
                         <View key={idx} className="background-light-gray mb-0.5 w-full flex flex-row items-center justify-between px-2 pl-4 pb-1 pt-2 background-gray">
                             <View className={"flex w-full flex-row justify-between px-0.5"}>
-                                <View className={"flex flex-row gap-1"}>
+                                <View className={"flex flex-row gap-1 w-1/2"}>
                                     <Text
-                                      className="text-red font-jomhuria text-3xl w-64"
+                                      className={"text-red font-jomhuria text-3xl w-full"}
                                       numberOfLines={1}
                                       ellipsizeMode="tail"
                                     >
@@ -348,10 +349,10 @@ function MealItemTracking({mealResponse, loginResponse, setScreen}: {
                 </View>
             </View>
 
-            {error && <Text className={"text-red text-3xl font-jomhuria text-center px-2"}>{error}</Text>}
-            <View className={"flex flex-row justify-between w-full px-4 mb-3 border-b border-b-gray-700"}>
+            {error && <Text className={"text-red text-3xl font-jomhuria text-center px-2 my-1"}>{error}</Text>}
+            <View className={"flex flex-row justify-between w-full px-4 mb-3 mt-2 border-b border-b-gray-700"}>
                 <Text className={"font-jomhuria text-white text-4xl"}>Meal Totals </Text>
-                <View className={"flex flex-row mt-0.5"}>
+                <View className={"flex flex-row"}>
                     <Text className={"mr-2 font-jomhuria text-white text-4xl text-right"}>
                         {getTotalCalories({mealItemList: mealItems})} kcal </Text>
                     <Text className={"w-40 font-jomhuria text-white text-4xl text-right"}>
@@ -362,7 +363,7 @@ function MealItemTracking({mealResponse, loginResponse, setScreen}: {
             <View className={"flex flex-row justify-end items-center w-full px-4 align-bottom mb-4"}>
                 <GoBackButton title={"Go Back"} onPress={handleGoBack} />
             </View>
-        </View>
+        </ScrollView>
     );
 }
 

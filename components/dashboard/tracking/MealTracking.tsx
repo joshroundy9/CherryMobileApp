@@ -1,4 +1,4 @@
-import {Image, Text, TouchableOpacity, View} from 'react-native';
+import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {LoginResponse} from "../../../types/Auth";
 import RedButton, {GoBackButton} from "../../generic/Buttons";
 import {useState, useEffect} from "react";
@@ -158,6 +158,11 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
             setError('Date response is not available');
             return;
         }
+        if (!weight || isNaN(Number(weight))) {
+            setError('Please enter a valid weight.');
+            setUpdatingWeight(false);
+            return;
+        }
         try {
             await UpdateDateWeight({
                 dateID: dateResponse.dateID,
@@ -271,7 +276,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                         return `${monthName} ${dayNum}${suffix}, ${yearNum}`;
                     })()}
                 </Text>
-                <Text className={"font-jomhuria text-4xl text-white"}>Tap a time to create a meal</Text>
+                <Text className={"font-jomhuria text-4xl text-white"}>Create Meals </Text>
             </View>
             <View className={"px-4 w-full flex flex-row justify-between items-center"}>
                 <Text className={"text-white font-jomhuria text-4xl ml-7"}>Meal Name</Text>
@@ -280,19 +285,22 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                     <Text className={"text-white font-jomhuria text-4xl mr-6"}>PROTEIN</Text>
                 </View>
             </View>
-            <View className={"flex-1 w-full"}>
+            <ScrollView className={"flex-1 w-full"}>
                 {intervals.map((interval, idx) => {
                     const meal = getMealForInterval(interval.start, interval.end);
                     return (
                         <View key={idx} className="border-b border-b-gray-700 w-full flex flex-row items-center justify-between px-2 pb-1 pt-2 background-gray">
                             {meal ? (
                                 <View className={"flex w-full flex-row justify-between px-0.5"}>
-                                    <TouchableOpacity className={"flex flex-row gap-1"} onPress={() => setScreen({newScreen: 'mealitem', newDate: date, mealResponse: meal})}>
+                                    <TouchableOpacity className={"flex flex-row gap-1 w-1/2"} onPress={() => setScreen({newScreen: 'mealitem', newDate: date, mealResponse: meal})}>
                                         <Image
                                             source={require('../../../assets/edit.png')}
                                             style={{ width: 25, height: 25 }}
                                         />
-                                        <Text className="text-red font-jomhuria text-3xl">{meal.mealName} <Text className="text-2xl text-white">({interval.label})</Text></Text>
+                                        <Text className="text-red font-jomhuria text-3xl w-full"
+                                              numberOfLines={1}
+                                              ellipsizeMode="tail">{meal.mealName}
+                                        </Text>
                                     </TouchableOpacity>
                                     <View className={"flex flex-row"}>
                                         <Text className="text-white font-jomhuria text-3xl mr-9">{meal.mealCalories}</Text>
@@ -333,7 +341,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                         </Text>
                     </View>
                 </View>
-            </View>
+            </ScrollView>
 
             {error && <Text className={"text-red text-3xl font-jomhuria text-center px-2"}>{error}</Text>}
 
