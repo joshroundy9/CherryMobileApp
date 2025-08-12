@@ -281,8 +281,7 @@ function MealItemTracking({mealResponse, loginResponse, setScreen}: {
     }
 
     return (
-        <ScrollView className={"w-full h-full flex flex-col"}
-        contentContainerStyle={{alignItems: 'center', justifyContent: 'space-between'}}>
+        <View className={"w-full h-full flex flex-col items-center justify-between"}>
             <View className={"w-full flex flex-row justify-between items-center pl-4 pr-2"}>
                 <Text className={"font-jomhuria text-4xl text-white"}>{mealResponse.mealName} </Text>
                 <Text className={"font-jomhuria text-4xl text-white"}>Add Meal Items </Text>
@@ -294,7 +293,7 @@ function MealItemTracking({mealResponse, loginResponse, setScreen}: {
                     <Text className={"text-white font-jomhuria text-4xl mr-6"}>PROTEIN</Text>
                 </View>
             </View>
-            <View className={"flex-1 w-full"}>
+            <ScrollView className={"flex-1 w-full"}>
                 {mealItems.map((mealItemDTO, idx) => {
                     return (
                         <View key={idx} className="background-light-gray mb-0.5 w-full flex flex-row items-center justify-between px-2 pl-4 pb-1 pt-2 background-gray">
@@ -347,7 +346,7 @@ function MealItemTracking({mealResponse, loginResponse, setScreen}: {
                         />
                     </TouchableOpacity>
                 </View>
-            </View>
+            </ScrollView>
 
             {error && <Text className={"text-red text-3xl font-jomhuria text-center px-2 my-1"}>{error}</Text>}
             <View className={"flex flex-row justify-between w-full px-4 mb-3 mt-2 border-b border-b-gray-700"}>
@@ -363,7 +362,7 @@ function MealItemTracking({mealResponse, loginResponse, setScreen}: {
             <View className={"flex flex-row justify-end items-center w-full px-4 align-bottom mb-4"}>
                 <GoBackButton title={"Go Back"} onPress={handleGoBack} />
             </View>
-        </ScrollView>
+        </View>
     );
 }
 

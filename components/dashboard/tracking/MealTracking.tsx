@@ -285,7 +285,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                     <Text className={"text-white font-jomhuria text-4xl mr-6"}>PROTEIN</Text>
                 </View>
             </View>
-            <ScrollView className={"flex-1 w-full"}>
+            <View className={"flex-1 w-full"}>
                 {intervals.map((interval, idx) => {
                     const meal = getMealForInterval(interval.start, interval.end);
                     return (
@@ -341,7 +341,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                         </Text>
                     </View>
                 </View>
-            </ScrollView>
+            </View>
 
             {error && <Text className={"text-red text-3xl font-jomhuria text-center px-2"}>{error}</Text>}
 
