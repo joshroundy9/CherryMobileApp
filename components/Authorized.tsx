@@ -5,6 +5,7 @@ import {LoginResponse} from "../types/Auth";
 import AccountInformation from "./dashboard/AccountInformation";
 import Home from "./dashboard/Home";
 import Tracking from "./dashboard/tracking/Tracking";
+import Analytics from "./dashboard/analytics/Analytics";
 
 function Authorized({ children, onLogout, loginResponse, setLoginResponse }: { children: React.ReactNode, onLogout: () => void, loginResponse: () => LoginResponse | null, setLoginResponse: (loginResponse: LoginResponse | null) => void }) {
     const [screen, setScreen] = useState('home');
@@ -42,6 +43,10 @@ function Authorized({ children, onLogout, loginResponse, setLoginResponse }: { c
             case 'profile':
                 return (
                     <AccountInformation loginResponse={loginResponse} onLogout={onLogout}/>
+                );
+                case 'analytics':
+                return (
+                    <Analytics loginResponse={loginResponse} />
                 );
             default:
                 return null;
