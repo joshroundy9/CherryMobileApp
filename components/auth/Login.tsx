@@ -1,8 +1,8 @@
-import Logo from "../Logo";
+import LargeLogo from "../generic/Logo";
 import {View, Text, TouchableOpacity, TextInput, Linking} from 'react-native';
-import RedButton from "../generic/RedButton";
+import RedButton from "../generic/Buttons";
 import {useState} from "react";
-import {LoginRequest, LoginResponse} from "../../types/auth";
+import {LoginRequest, LoginResponse} from "../../types/Auth";
 import {LoginUser} from "../../clients/AuthClient";
 
 function Login({ changeScreen, getMessage, onLogin }: { changeScreen: (screen: string, message?: string) => void, getMessage: () => string | null, onLogin: (loginResponse: LoginResponse) => Promise<void> }) {
@@ -34,7 +34,7 @@ function Login({ changeScreen, getMessage, onLogin }: { changeScreen: (screen: s
     }
 
     return (<View className="w-3/4 flex flex-col items-center">
-            <Logo />
+            <LargeLogo />
             <Text className="text-white pt-4 font-jomhuria text-5xl w-full text-center mb-8 mt-4">
                 Login
             </Text>
@@ -70,7 +70,7 @@ function Login({ changeScreen, getMessage, onLogin }: { changeScreen: (screen: s
                 </TouchableOpacity>
             </View>
 
-            <Text className="text-red text-3xl font-jomhuria mt-4 h-12">
+            <Text className="text-red text-3xl w-full font-jomhuria mt-4 h-24 text-center">
                 {error ? error : ''}
                 {!error && getMessage() ? getMessage() : ''}
             </Text>

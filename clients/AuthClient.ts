@@ -1,5 +1,5 @@
-import {LoginRequest, LoginResponse, RegisterRequest, UserResponse} from '../types/auth';
-export const API_URL = 'https://cherrywebserver.joshroundy.dev:8080';
+import {LoginRequest, LoginResponse, RegisterRequest, UserResponse} from '../types/Auth';
+const API_URL = 'https://cherrywebserver.joshroundy.dev:8080';
 
 export const RegisterUser = async (request: RegisterRequest): Promise<UserResponse> => {
     const response = await fetch(`${API_URL}/auth/register`, {
