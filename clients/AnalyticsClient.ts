@@ -1,4 +1,3 @@
-import {AIDataResponse} from "../types/AI";
 import {API_URL} from "./TrackingClient";
 import {GetAverageDataResponse, GetGraphDataRequest, GetHeatMapDataResponse} from "../types/Analytics";
 import {DateResponse} from "../types/Tracking";
