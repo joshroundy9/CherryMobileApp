@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Dimensions, ScrollView } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { DateResponse } from "../../../types/Tracking";
@@ -12,6 +12,24 @@ function Graph({ data, timeframe = 365 }: { data: DateResponse[]; timeframe?: nu
         protein: number;
         weight: number;
     } | null>(null);
+
+    const selectDataPoint = (index: number) => {
+        const dataPoint = filledData[index];
+        if (dataPoint) {
+            setSelectedData({
+                date: dataPoint.date,
+                calories: dataPoint.calories,
+                protein: dataPoint.protein,
+                weight: dataPoint.weight
+            });
+        }
+    };
+
+    useEffect(() => {
+        if (filledData.length > 0) {
+            selectDataPoint(filledData.length - 1);
+        }
+    }, [data, timeframe]);
     const getHeader = () => {
         switch (timeframe) {
             case 7: return "Weekly"
@@ -36,7 +54,10 @@ function Graph({ data, timeframe = 365 }: { data: DateResponse[]; timeframe?: nu
     const filledData = dateArray.map(date => {
         const item = dataMap[date];
         return {
-            date: new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+            date: (() => {
+                const [year, month, day] = date.split('-').map(Number);
+                return new Date(year, month - 1, day).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            })(),
             calories: item ? Number(item.dailyCalories) || 0 : 0,
             protein: item ? Number(item.dailyProtein) || 0 : 0,
             weight: item ? Number(item.dailyWeight) || 0 : 0,
@@ -56,8 +77,8 @@ function Graph({ data, timeframe = 365 }: { data: DateResponse[]; timeframe?: nu
     const labels = createLabels(filledData);
 
     const chartConfig = {
-        backgroundGradientFrom: "#1a1a1a",
-        backgroundGradientTo: "#1a1a1a",
+        backgroundGradientFrom: "#1e1e1e",
+        backgroundGradientTo: "#1e1e1e",
         color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
         strokeWidth: 3,
         barPercentage: 0.5,
@@ -121,7 +142,7 @@ function Graph({ data, timeframe = 365 }: { data: DateResponse[]; timeframe?: nu
                 <View className="w-full">
                     <LineChart
                         data={combinedData}
-                        width={screenWidth-10}
+                        width={screenWidth}
                         height={400}
                         chartConfig={chartConfig}
                         bezier
@@ -136,17 +157,7 @@ function Graph({ data, timeframe = 365 }: { data: DateResponse[]; timeframe?: nu
                         withDots={true}
                         withShadow={false}
                         onDataPointClick={(data) => {
-                            const index = data.index;
-                            const dataPoint = filledData[index];
-                            if (dataPoint) {
-                                setSelectedData({
-                                    date: dataPoint.date,
-                                    calories: dataPoint.calories,
-                                    protein: dataPoint.protein,
-                                    weight: dataPoint.weight
-                                });
-                            }
-                        }}
+                            selectDataPoint(data.index);}}
                         decorator={() => {
                             return null;
                         }}
@@ -176,9 +187,6 @@ function Graph({ data, timeframe = 365 }: { data: DateResponse[]; timeframe?: nu
                 )}
 
                 <View className="mt-4 px-4">
-                    <Text className="text-white font-jomhuria text-2xl text-center opacity-70">
-                        * Only showing days with recorded data
-                    </Text>
                     <Text className="text-white font-jomhuria text-2xl text-center opacity-70">
                         * Protein and Weight values are scaled by 10 for better visualization
                     </Text>
