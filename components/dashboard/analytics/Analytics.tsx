@@ -43,6 +43,21 @@ function Analytics({loginResponse}: {loginResponse: () => LoginResponse | null})
                 setLoading(false);
             }
         };
+        const retrieveGraphData = async ({daysBack}: {daysBack: number}) => {
+            try {
+                const graphDataResponse = await GetGraphData({
+                    DaysBack: daysBack,
+                    UserID: loginResponse()?.user.userID || ''
+                }, jwt);
+                setGraphData(graphDataResponse);
+            } catch (e) {
+                if (e instanceof Error) {
+                    setError(e.message);
+                } else {
+                    setError('An unexpected error occurred while retrieving graph data.');
+                }
+            }
+        }
         const calculateMonthlyTracking = ({heatMap}: {heatMap: GetHeatMapDataResponseItem[]}) => {
             const thirtyDaysAgo = new Date();
             thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -74,72 +89,81 @@ function Analytics({loginResponse}: {loginResponse: () => LoginResponse | null})
     }
 
     return (
-        <ScrollView className={"flex flex-col w-full h-full px-3"}>
-            <Text className={"text-center font-jomhuria text-5xl text-white w-full"}>Analytics</Text>
-            <Text className={"w-full text-start font-jomhuria text-white text-4xl mt-4"}>
-                Nutrition and Weight Graphs
-            </Text>
-            <View className={"w-full flex flex-row justify-between mb-1.5"}>
-                <View className={"w-1/2 pr-1.5"}>
-                    <TouchableOpacity className={"w-full background-light-gray rounded-xl pt-1"}>
-                        <Text className={"text-white text-3xl font-jomhuria text-center"}>
-                            Previous Week
-                        </Text>
-                    </TouchableOpacity>
+        <View className={"w-full h-full"}>
+            <ScrollView className={"flex flex-col w-full h-full px-3"}>
+                <Text className={"text-center font-jomhuria text-5xl text-white w-full"}>Analytics</Text>
+                <Text className={"w-full text-start font-jomhuria text-white text-4xl mt-4"}>
+                    Nutrition and Weight Graphs
+                </Text>
+                <View className={"w-full flex flex-row justify-between mb-1.5"}>
+                    <View className={"w-1/2 pr-1.5"}>
+                        <TouchableOpacity className={"w-full background-light-gray rounded-xl pt-1"}>
+                            <Text className={"text-white text-3xl font-jomhuria text-center"}>
+                                Previous Week
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View className={"w-1/2 pl-1.5"}>
+                        <TouchableOpacity className={"w-full background-light-gray rounded-xl pt-1"}>
+                            <Text className={"text-white text-3xl font-jomhuria text-center"}>
+                                Previous Month
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-                <View className={"w-1/2 pl-1.5"}>
-                    <TouchableOpacity className={"w-full background-light-gray rounded-xl pt-1"}>
-                        <Text className={"text-white text-3xl font-jomhuria text-center"}>
-                            Previous Month
-                        </Text>
-                    </TouchableOpacity>
+                <View className={"w-full flex flex-row justify-between mb-6"}>
+                    <View className={"w-1/2 pr-1.5"}>
+                        <TouchableOpacity className={"w-full background-light-gray rounded-xl pt-1"}>
+                            <Text className={"text-white text-3xl font-jomhuria text-center"}>
+                                Previous 90 Days
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View className={"w-1/2 pl-1.5"}>
+                        <TouchableOpacity className={"w-full background-light-gray rounded-xl pt-1"}>
+                            <Text className={"text-white text-3xl font-jomhuria text-center"}>
+                                Previous Year
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-            </View>
-            <View className={"w-full flex flex-row justify-between mb-6"}>
-                <View className={"w-1/2 pr-1.5"}>
-                    <TouchableOpacity className={"w-full background-light-gray rounded-xl pt-1"}>
-                        <Text className={"text-white text-3xl font-jomhuria text-center"}>
-                            Previous 90 Days
-                        </Text>
-                    </TouchableOpacity>
+                <View className={"w-full flex flex-row"}>
+                    <View className={"w-1/2 h-32 pr-1.5"}>
+                        <AnalyticsWidget header={"Average Calorie Intake"} text={`${Math.round(averageData?.averageData.averageCalories || 0)} kcal`}/>
+                    </View>
+                    <View className={"w-1/2 h-32 pl-1.5"}>
+                        <AnalyticsWidget header={"Weight Change"} text={`${(Number(loginResponse()?.user.weight) || 0) - (Number(loginResponse()?.user.startingWeight) || 0)} lbs`}/>
+                    </View>
                 </View>
-                <View className={"w-1/2 pl-1.5"}>
-                    <TouchableOpacity className={"w-full background-light-gray rounded-xl pt-1"}>
-                        <Text className={"text-white text-3xl font-jomhuria text-center"}>
-                            Previous Year
-                        </Text>
-                    </TouchableOpacity>
+                <View className={"w-full flex flex-row"}>
+                    <View className={"w-1/2 h-32 pr-1.5 mt-3"}>
+                        <AnalyticsWidget header={"Average Protein Intake"} text={`${Math.round(averageData?.averageData.averageProtein || 0)} grams`}/>
+                    </View>
+                    <View className={"w-1/2 h-32 pl-1.5 mt-3"}>
+                        <AnalyticsWidget header={"Average Daily Weight"} text={`${Math.round(averageData?.averageData.averageWeight || 0)} lbs`}/>
+                    </View>
                 </View>
-            </View>
-            <View className={"w-full flex flex-row"}>
-                <View className={"w-1/2 h-32 pr-1.5"}>
-                    <AnalyticsWidget header={"Average Calorie Intake"} text={`${Math.round(averageData?.averageData.averageCalories || 0)} kcal`}/>
+                <View className={"w-full flex flex-row"}>
+                    <View className={"w-1/2 h-32 pr-1.5 mt-3"}>
+                        <AnalyticsWidget header={"Monthly Weight Tracking"} text={`${monthlyWeightTracking} / 30 days`}/>
+                    </View>
+                    <View className={"w-1/2 h-32 pl-1.5 mt-3"}>
+                        <AnalyticsWidget header={"Monthly Nutrition Tracking"} text={`${monthlyNutritionTracking} / 30 days`}/>
+                    </View>
                 </View>
-                <View className={"w-1/2 h-32 pl-1.5"}>
-                    <AnalyticsWidget header={"Weight Change"} text={`${(Number(loginResponse()?.user.weight) || 0) - (Number(loginResponse()?.user.startingWeight) || 0)} lbs`}/>
+                <Text className={"w-full text-start font-jomhuria text-white text-4xl mt-6"}>
+                    Tracking History
+                </Text>
+                <HeatMap heatMapData={heatMapData.heatMapData}/>
+            </ScrollView>
+            {error && (
+                <View className={"w-full"}>
+                    <Text className={"text-red text-2xl font-jomhuria text-center"}>)
+                        {error}
+                    </Text>
                 </View>
-            </View>
-            <View className={"w-full flex flex-row"}>
-                <View className={"w-1/2 h-32 pr-1.5 mt-3"}>
-                    <AnalyticsWidget header={"Average Protein Intake"} text={`${Math.round(averageData?.averageData.averageProtein || 0)} grams`}/>
-                </View>
-                <View className={"w-1/2 h-32 pl-1.5 mt-3"}>
-                    <AnalyticsWidget header={"Average Daily Weight"} text={`${Math.round(averageData?.averageData.averageWeight || 0)} lbs`}/>
-                </View>
-            </View>
-            <View className={"w-full flex flex-row"}>
-                <View className={"w-1/2 h-32 pr-1.5 mt-3"}>
-                    <AnalyticsWidget header={"Monthly Weight Tracking"} text={`${monthlyWeightTracking} / 30 days`}/>
-                </View>
-                <View className={"w-1/2 h-32 pl-1.5 mt-3"}>
-                    <AnalyticsWidget header={"Monthly Nutrition Tracking"} text={`${monthlyNutritionTracking} / 30 days`}/>
-                </View>
-            </View>
-            <Text className={"w-full text-start font-jomhuria text-white text-4xl mt-6"}>
-                Tracking History
-            </Text>
-            <HeatMap heatMapData={heatMapData.heatMapData}/>
-        </ScrollView>
+            )}
+        </View>
     );
 }
 export default Analytics;

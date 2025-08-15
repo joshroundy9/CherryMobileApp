@@ -28,6 +28,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
     const [addingMeal, setAddingMeal] = useState(false);
     const [addMealTime, setAddMealTime] = useState('');
     const [updatingWeight, setUpdatingWeight] = useState(false);
+    const [viewingGraph, setViewingGraph] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
