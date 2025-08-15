@@ -2,7 +2,7 @@ import {LoginResponse} from "../../../types/Auth";
 import {ScrollView, Text, TouchableOpacity, View} from "react-native";
 import {useEffect, useState} from "react";
 import {DateResponse} from "../../../types/Tracking";
-import {GetAverageDataResponse, GetHeatMapDataResponse} from "../../../types/Analytics";
+import {GetAverageDataResponse, GetHeatMapDataResponse, GetHeatMapDataResponseItem} from "../../../types/Analytics";
 import {GetAverageData, GetGraphData, GetHeatMapData} from "../../../clients/AnalyticsClient";
 import AnalyticsWidget from "../../generic/AnalyticsWidget";
 import Loading from "../../generic/Loading";
@@ -32,7 +32,8 @@ function Analytics({loginResponse}: {loginResponse: () => LoginResponse | null})
                 const averageData = await GetAverageData(loginResponse()?.user.userID || '', jwt);
 
                 setAverageData(averageData);
-            } catch (e) {
+
+                calculateMonthlyTracking({heatMap: heatMapDataResponse.heatMapData});            } catch (e) {
                 if (e instanceof Error) {
                     setError(e.message);
                 } else {
@@ -42,16 +43,14 @@ function Analytics({loginResponse}: {loginResponse: () => LoginResponse | null})
                 setLoading(false);
             }
         };
-        const calculateMonthlyTracking = () => {
-            if (!heatMapData.heatMapData) return;
-
+        const calculateMonthlyTracking = ({heatMap}: {heatMap: GetHeatMapDataResponseItem[]}) => {
             const thirtyDaysAgo = new Date();
             thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
             let weightDays = 0;
             let nutritionDays = 0;
 
-            Object.entries(heatMapData.heatMapData).forEach(([dateString, value]) => {
+            Object.entries(heatMap).forEach(([dateString, value]) => {
                 const date = new Date(dateString);
                 if (date <= thirtyDaysAgo) {
                     if (value.value === 'WEIGHT' || value.value === 'BOTH') {
@@ -67,9 +66,7 @@ function Analytics({loginResponse}: {loginResponse: () => LoginResponse | null})
             setMonthlyNutritionTracking(nutritionDays);
         };
 
-        fetchData().then(() => {
-            calculateMonthlyTracking();
-        });
+        fetchData();
     }, [loginResponse(), jwt]);
 
     if (loading) {
