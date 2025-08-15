@@ -40,6 +40,7 @@ export const GetHeatMapData = async (request: GetGraphDataRequest, jwt: string):
 
     if (response.ok) {
         const data = await response.json();
+        console.log('Heat map data retrieved successfully:', data);
         return data as GetHeatMapDataResponse;
     } else if (response.status === 400) {
         const errorData = await response.json();
