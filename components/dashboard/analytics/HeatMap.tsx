@@ -12,8 +12,6 @@ function HeatMap({ heatMapData }: HeatMapProps) {
     useEffect(() => {
         const timer = setTimeout(() => {
             if (scrollViewRef.current) {
-
-                // Then create a gradual scroll with longer duration
                 const gradualTimer = setTimeout(() => {
                     scrollViewRef.current?.scrollToEnd({ animated: true });
                 }, 0);
