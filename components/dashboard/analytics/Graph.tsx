@@ -69,9 +69,9 @@ function Graph({ data, timeframe = 365 }: { data: DateResponse[]; timeframe?: nu
     };
 
     // Datasets for each metric (do not change input data, just transform for chart)
-    const caloriesData = filledData.map(item => item.calories === 0 ? null : item.calories);
-    const proteinData = filledData.map(item => item.scaledProtein === 0 ? null : item.scaledProtein);
-    const weightData = filledData.map(item => item.scaledWeight === 0 ? null : item.scaledWeight);
+    const caloriesData = filledData.map(item => item.calories);
+    const proteinData = filledData.map(item => item.scaledProtein);
+    const weightData = filledData.map(item => item.scaledWeight);
 
     const combinedData = {
         labels,
@@ -155,28 +155,22 @@ function Graph({ data, timeframe = 365 }: { data: DateResponse[]; timeframe?: nu
 
                 {selectedData && (
                     <View className="mb-6 px-4 bg-light-gray rounded-xl">
-                        <Text className="text-white text-xl font-jomhuria text-center mb-3">
+                        <Text className="text-white text-2xl font-jomhuria text-center mb-3">
                             Data for {selectedData.date}
                         </Text>
                         <View className="flex flex-row justify-between">
-                            {selectedData.calories > 0 && (
-                                <View className="flex-1 items-center">
-                                    <Text className="text-red-400 text-lg font-jomhuria">Calories</Text>
-                                    <Text className="text-white text-2xl font-jomhuria">{selectedData.calories}</Text>
-                                </View>
-                            )}
-                            {selectedData.protein > 0 && (
-                                <View className="flex-1 items-center">
-                                    <Text className="text-teal-400 text-lg font-jomhuria">Protein</Text>
-                                    <Text className="text-white text-2xl font-jomhuria">{selectedData.protein}g</Text>
-                                </View>
-                            )}
-                            {selectedData.weight > 0 && (
-                                <View className="flex-1 items-center">
-                                    <Text className="text-blue-400 text-lg font-jomhuria">Weight</Text>
-                                    <Text className="text-white text-2xl font-jomhuria">{selectedData.weight}lbs</Text>
-                                </View>
-                            )}
+                            <View className="flex-1 items-center">
+                                <Text className="text-red text-2xl font-jomhuria">Calories</Text>
+                                <Text className="text-white text-3xl font-jomhuria">{selectedData.calories ? selectedData.calories + 'kcal' : ' N/A '}</Text>
+                            </View>
+                            <View className="flex-1 items-center">
+                                <Text className="text-blue text-2xl font-jomhuria">Protein</Text>
+                                <Text className="text-white text-3xl font-jomhuria">{selectedData.protein ? selectedData.protein + 'g' : ' N/A '}</Text>
+                            </View>
+                            <View className="flex-1 items-center">
+                                <Text className="text-green text-2xl font-jomhuria">Weight</Text>
+                                <Text className="text-white text-3xl font-jomhuria">{selectedData.weight ? selectedData.weight + 'lbs' : ' N/A '}</Text>
+                            </View>
                         </View>
                     </View>
                 )}

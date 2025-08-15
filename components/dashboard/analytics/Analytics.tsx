@@ -73,11 +73,10 @@ function Analytics({loginResponse}: {loginResponse: () => LoginResponse | null})
     }, [loginResponse(), jwt]);
     const retrieveGraphData = async ({daysBack}: {daysBack: number}) => {
         try {
-            const graphDataResponse = await GetGraphData({
+            return await GetGraphData({
                 DaysBack: daysBack,
                 UserID: loginResponse()?.user.userID || ''
             }, jwt);
-            setGraphData(graphDataResponse);
         } catch (e) {
             if (e instanceof Error) {
                 setError(e.message);
@@ -91,9 +90,10 @@ function Analytics({loginResponse}: {loginResponse: () => LoginResponse | null})
         setLoading(true);
         setGraphLength(daysBack);
         retrieveGraphData({daysBack})
-            .then(() => {
+            .then((returnedData) => {
                 setLoading(false);
-                if (graphData.length > 0) {
+                setGraphData(returnedData || []);
+                if (returnedData != undefined && returnedData.length > 0) {
                     setViewingGraph(true);
                 }
             });
