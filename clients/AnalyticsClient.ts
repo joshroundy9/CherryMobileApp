@@ -16,6 +16,7 @@ export const GetGraphData = async (request: GetGraphDataRequest, jwt: string): P
 
     if (response.ok) {
         const data = await response.json();
+        console.log('Graph data retrieved successfully:', data);
         return data as DateResponse[];
     } else if (response.status === 400) {
         const errorData = await response.json();

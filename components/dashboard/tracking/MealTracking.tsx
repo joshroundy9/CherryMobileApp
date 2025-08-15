@@ -28,7 +28,6 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
     const [addingMeal, setAddingMeal] = useState(false);
     const [addMealTime, setAddMealTime] = useState('');
     const [updatingWeight, setUpdatingWeight] = useState(false);
-    const [viewingGraph, setViewingGraph] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -171,7 +170,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                 dailyWeight: weight,
             }, jwt);
             if (date === new Date().toLocaleDateString('en-CA').split('T')[0]) {
-                console.debug('Updating user weight in login response');
+                console.log('Updating user weight in login response');
                 const updatedUser = await UpdateUserWeight({
                     userID: loginResponse()?.user.userID || '',
                     weight: weight
@@ -272,7 +271,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                         if (isNaN(year) || isNaN(month) || isNaN(day)) return "Invalid date";
                         const dateObj = new Date(year, month - 1, day); // month - 1 because Date months are 0-indexed
                         const dayNum = dateObj.getDate();
-                        const monthName = dateObj.toLocaleDateString('en-US', { month: 'long' });
+                        const monthName = dateObj.toLocaleDateString('en-CA', { month: 'long' });
                         const yearNum = dateObj.getFullYear();
                         const suffix = dayNum > 3 && dayNum < 21 ? 'th' : ['th', 'st', 'nd', 'rd'][dayNum % 10] || 'th';
                         return `${monthName} ${dayNum}${suffix}, ${yearNum}`;

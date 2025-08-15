@@ -7,6 +7,7 @@ import {GetAverageData, GetGraphData, GetHeatMapData} from "../../../clients/Ana
 import AnalyticsWidget from "../../generic/AnalyticsWidget";
 import Loading from "../../generic/Loading";
 import HeatMap from "./HeatMap";
+import Graph from "./Graph";
 
 function Analytics({loginResponse}: {loginResponse: () => LoginResponse | null}) {
     const [loading, setLoading] = useState(false);
@@ -17,6 +18,7 @@ function Analytics({loginResponse}: {loginResponse: () => LoginResponse | null})
     const jwt = loginResponse()?.jwt || '';
     const [monthlyWeightTracking, setMonthlyWeightTracking] = useState<number>(0);
     const [monthlyNutritionTracking, setMonthlyNutritionTracking] = useState<number>(0);
+    const [viewingGraph, setViewingGraph] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -43,21 +45,6 @@ function Analytics({loginResponse}: {loginResponse: () => LoginResponse | null})
                 setLoading(false);
             }
         };
-        const retrieveGraphData = async ({daysBack}: {daysBack: number}) => {
-            try {
-                const graphDataResponse = await GetGraphData({
-                    DaysBack: daysBack,
-                    UserID: loginResponse()?.user.userID || ''
-                }, jwt);
-                setGraphData(graphDataResponse);
-            } catch (e) {
-                if (e instanceof Error) {
-                    setError(e.message);
-                } else {
-                    setError('An unexpected error occurred while retrieving graph data.');
-                }
-            }
-        }
         const calculateMonthlyTracking = ({heatMap}: {heatMap: GetHeatMapDataResponseItem[]}) => {
             const thirtyDaysAgo = new Date();
             thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -83,9 +70,39 @@ function Analytics({loginResponse}: {loginResponse: () => LoginResponse | null})
 
         fetchData();
     }, [loginResponse(), jwt]);
+    const retrieveGraphData = async ({daysBack}: {daysBack: number}) => {
+        try {
+            const graphDataResponse = await GetGraphData({
+                DaysBack: daysBack,
+                UserID: loginResponse()?.user.userID || ''
+            }, jwt);
+            setGraphData(graphDataResponse);
+        } catch (e) {
+            if (e instanceof Error) {
+                setError(e.message);
+            } else {
+                setError('An unexpected error occurred while retrieving graph data.');
+            }
+            setViewingGraph(false);
+        }
+    }
+    const handleGraphButtonClick = (daysBack: number) => {
+        setViewingGraph(true);
+        setLoading(true);
+        retrieveGraphData({daysBack})
+            .then(() => {
+                setLoading(false);
+            });
+    }
 
     if (loading) {
         return <Loading/>
+    }
+
+    if (viewingGraph) {
+        return (
+            <Graph data={graphData}/>
+        );
     }
 
     return (
@@ -97,14 +114,16 @@ function Analytics({loginResponse}: {loginResponse: () => LoginResponse | null})
                 </Text>
                 <View className={"w-full flex flex-row justify-between mb-1.5"}>
                     <View className={"w-1/2 pr-1.5"}>
-                        <TouchableOpacity className={"w-full background-light-gray rounded-xl pt-1"}>
+                        <TouchableOpacity className={"w-full background-light-gray rounded-xl pt-1"}
+                                          onPress={() => handleGraphButtonClick(7)}>
                             <Text className={"text-white text-3xl font-jomhuria text-center"}>
                                 Previous Week
                             </Text>
                         </TouchableOpacity>
                     </View>
                     <View className={"w-1/2 pl-1.5"}>
-                        <TouchableOpacity className={"w-full background-light-gray rounded-xl pt-1"}>
+                        <TouchableOpacity className={"w-full background-light-gray rounded-xl pt-1"}
+                                          onPress={() => handleGraphButtonClick(30)}>
                             <Text className={"text-white text-3xl font-jomhuria text-center"}>
                                 Previous Month
                             </Text>
@@ -113,14 +132,16 @@ function Analytics({loginResponse}: {loginResponse: () => LoginResponse | null})
                 </View>
                 <View className={"w-full flex flex-row justify-between mb-6"}>
                     <View className={"w-1/2 pr-1.5"}>
-                        <TouchableOpacity className={"w-full background-light-gray rounded-xl pt-1"}>
+                        <TouchableOpacity className={"w-full background-light-gray rounded-xl pt-1"}
+                                          onPress={() => handleGraphButtonClick(90)}>
                             <Text className={"text-white text-3xl font-jomhuria text-center"}>
                                 Previous 90 Days
                             </Text>
                         </TouchableOpacity>
                     </View>
                     <View className={"w-1/2 pl-1.5"}>
-                        <TouchableOpacity className={"w-full background-light-gray rounded-xl pt-1"}>
+                        <TouchableOpacity className={"w-full background-light-gray rounded-xl pt-1"}
+                                          onPress={() => handleGraphButtonClick(365)}>
                             <Text className={"text-white text-3xl font-jomhuria text-center"}>
                                 Previous Year
                             </Text>
