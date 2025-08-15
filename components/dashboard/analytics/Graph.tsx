@@ -5,7 +5,7 @@ import { DateResponse } from "../../../types/Tracking";
 
 const { width: screenWidth } = Dimensions.get('window');
 
-function Graph({ data }: { data: DateResponse[] }) {
+function Graph({ data, timeframe = 365 }: { data: DateResponse[]; timeframe?: number }) {
     const [selectedData, setSelectedData] = useState<{
         date: string;
         calories: number;
@@ -13,34 +13,38 @@ function Graph({ data }: { data: DateResponse[] }) {
         weight: number;
     } | null>(null);
 
-    // Transform and filter data - only include entries with positive values
-    const transformedData = data
-        .map((item) => ({
-            date: new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-            calories: Number(item.dailyCalories) || 0,
-            protein: Number(item.dailyProtein) || 0,
-            weight: Number(item.dailyWeight) || 0,
-            originalDate: item.date
-        }))
-        .filter((item) =>
-            item.calories > 0 || item.protein > 0 || item.weight > 0
-        )
-        .map((item) => ({
-            ...item,
-            scaledProtein: item.protein * 10, // Scale protein for visibility
-            scaledWeight: item.weight * 10,   // Scale weight for visibility
-        }));
+    // Generate array of dates for the timeframe
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(endDate.getDate() - timeframe + 1);
+    const dateArray: string[] = [];
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+        dateArray.push(new Date(d).toISOString().split('T')[0]);
+    }
 
-    // Create 5 evenly spaced labels to avoid overlap
-    const createLabels = (data: typeof transformedData) => {
+    // Map data to the date array, filling missing dates with zero/empty values
+    const dataMap = Object.fromEntries(data.map(item => [item.date, item]));
+    const filledData = dateArray.map(date => {
+        const item = dataMap[date];
+        return {
+            date: new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+            calories: item ? Number(item.dailyCalories) || 0 : 0,
+            protein: item ? Number(item.dailyProtein) || 0 : 0,
+            weight: item ? Number(item.dailyWeight) || 0 : 0,
+            originalDate: date,
+            scaledProtein: item ? (Number(item.dailyProtein) || 0) * 10 : 0,
+            scaledWeight: item ? (Number(item.dailyWeight) || 0) * 10 : 0
+        };
+    });
+
+    // Create 5 evenly spaced labels
+    const createLabels = (data: typeof filledData) => {
         if (data.length <= 5) return data.map(item => item.date);
-
-        const step = Math.floor(data.length / 4); // 4 intervals = 5 points
+        const step = Math.floor((data.length - 1) / 4);
         const indices = [0, step, step * 2, step * 3, data.length - 1];
         return indices.map(i => data[i]?.date || '');
     };
-
-    const labels = createLabels(transformedData);
+    const labels = createLabels(filledData);
 
     const chartConfig = {
         backgroundGradientFrom: "#1a1a1a",
@@ -55,38 +59,38 @@ function Graph({ data }: { data: DateResponse[] }) {
         }
     };
 
-    // Create separate datasets for each metric, filtering out zero values
-    const caloriesData = transformedData.filter(item => item.calories > 0).map(item => item.calories);
-    const proteinData = transformedData.filter(item => item.protein > 0).map(item => item.scaledProtein);
-    const weightData = transformedData.filter(item => item.weight > 0).map(item => item.scaledWeight);
+    // Datasets for each metric
+    const caloriesData = filledData.map(item => item.calories);
+    const proteinData = filledData.map(item => item.scaledProtein);
+    const weightData = filledData.map(item => item.scaledWeight);
 
     const combinedData = {
         labels,
         datasets: [
-            ...(caloriesData.length > 0 ? [{
-                data: transformedData.map(item => item.calories > 0 ? item.calories : null).filter(val => val !== null) as number[],
+            ...(caloriesData.some(val => val > 0) ? [{
+                data: caloriesData,
                 color: (opacity = 1) => `rgba(255, 107, 107, ${opacity})`,
                 strokeWidth: 3
             }] : []),
-            ...(proteinData.length > 0 ? [{
-                data: transformedData.map(item => item.protein > 0 ? item.scaledProtein : null).filter(val => val !== null) as number[],
+            ...(proteinData.some(val => val > 0) ? [{
+                data: proteinData,
                 color: (opacity = 1) => `rgba(78, 205, 196, ${opacity})`,
                 strokeWidth: 3
             }] : []),
-            ...(weightData.length > 0 ? [{
-                data: transformedData.map(item => item.weight > 0 ? item.scaledWeight : null).filter(val => val !== null) as number[],
+            ...(weightData.some(val => val > 0) ? [{
+                data: weightData,
                 color: (opacity = 1) => `rgba(69, 183, 209, ${opacity})`,
                 strokeWidth: 3
             }] : [])
         ],
         legend: [
-            ...(caloriesData.length > 0 ? ["Calories"] : []),
-            ...(proteinData.length > 0 ? ["Protein (x10)"] : []),
-            ...(weightData.length > 0 ? ["Weight (x10)"] : [])
+            ...(caloriesData.some(val => val > 0) ? ["Calories"] : []),
+            ...(proteinData.some(val => val > 0) ? ["Protein (x10)"] : []),
+            ...(weightData.some(val => val > 0) ? ["Weight (x10)"] : [])
         ]
     };
 
-    if (transformedData.length === 0) {
+    if (filledData.length === 0) {
         return (
             <View className="w-full h-full bg-dark-gray flex justify-center items-center">
                 <Text className="text-white text-2xl font-jomhuria text-center">
@@ -125,7 +129,7 @@ function Graph({ data }: { data: DateResponse[] }) {
                         withShadow={false}
                         onDataPointClick={(data) => {
                             const index = data.index;
-                            const dataPoint = transformedData[index];
+                            const dataPoint = filledData[index];
                             if (dataPoint) {
                                 setSelectedData({
                                     date: dataPoint.date,

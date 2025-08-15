@@ -19,6 +19,7 @@ function Analytics({loginResponse}: {loginResponse: () => LoginResponse | null})
     const [monthlyWeightTracking, setMonthlyWeightTracking] = useState<number>(0);
     const [monthlyNutritionTracking, setMonthlyNutritionTracking] = useState<number>(0);
     const [viewingGraph, setViewingGraph] = useState(false);
+    const [graphLength, setGraphLength] = useState(7);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -87,11 +88,14 @@ function Analytics({loginResponse}: {loginResponse: () => LoginResponse | null})
         }
     }
     const handleGraphButtonClick = (daysBack: number) => {
-        setViewingGraph(true);
         setLoading(true);
+        setGraphLength(daysBack);
         retrieveGraphData({daysBack})
             .then(() => {
                 setLoading(false);
+                if (graphData.length > 0) {
+                    setViewingGraph(true);
+                }
             });
     }
 
@@ -101,7 +105,7 @@ function Analytics({loginResponse}: {loginResponse: () => LoginResponse | null})
 
     if (viewingGraph) {
         return (
-            <Graph data={graphData}/>
+            <Graph data={graphData} timeframe={graphLength}/>
         );
     }
 
