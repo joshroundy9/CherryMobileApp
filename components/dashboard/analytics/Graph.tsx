@@ -12,6 +12,15 @@ function Graph({ data, timeframe = 365 }: { data: DateResponse[]; timeframe?: nu
         protein: number;
         weight: number;
     } | null>(null);
+    const getHeader = () => {
+        switch (timeframe) {
+            case 7: return "Weekly"
+            case 30: return "Monthly"
+            case 90: return "Quarterly"
+            case 365: return "Yearly"
+            default: return timeframe + " Day"
+        }
+    }
 
     // Generate array of dates for the timeframe
     const endDate = new Date();
@@ -59,27 +68,27 @@ function Graph({ data, timeframe = 365 }: { data: DateResponse[]; timeframe?: nu
         }
     };
 
-    // Datasets for each metric
-    const caloriesData = filledData.map(item => item.calories);
-    const proteinData = filledData.map(item => item.scaledProtein);
-    const weightData = filledData.map(item => item.scaledWeight);
+    // Datasets for each metric (do not change input data, just transform for chart)
+    const caloriesData = filledData.map(item => item.calories === 0 ? null : item.calories);
+    const proteinData = filledData.map(item => item.scaledProtein === 0 ? null : item.scaledProtein);
+    const weightData = filledData.map(item => item.scaledWeight === 0 ? null : item.scaledWeight);
 
     const combinedData = {
         labels,
         datasets: [
-            ...(caloriesData.some(val => val > 0) ? [{
+            ...(caloriesData.some(val => val && val > 0) ? [{
                 data: caloriesData,
-                color: (opacity = 1) => `rgba(255, 107, 107, ${opacity})`,
+                color: (opacity = 1) => `rgba(255, 6, 6, ${opacity})`,
                 strokeWidth: 3
             }] : []),
-            ...(proteinData.some(val => val > 0) ? [{
+            ...(proteinData.some(val => val && val > 0) ? [{
                 data: proteinData,
-                color: (opacity = 1) => `rgba(78, 205, 196, ${opacity})`,
+                color: (opacity = 1) => `rgba(112, 174, 255, ${opacity})`,
                 strokeWidth: 3
             }] : []),
             ...(weightData.some(val => val > 0) ? [{
                 data: weightData,
-                color: (opacity = 1) => `rgba(69, 183, 209, ${opacity})`,
+                color: (opacity = 1) => `rgba(105, 255, 135, ${opacity})`,
                 strokeWidth: 3
             }] : [])
         ],
@@ -105,15 +114,14 @@ function Graph({ data, timeframe = 365 }: { data: DateResponse[]; timeframe?: nu
 
     return (
         <View className="w-full h-full bg-dark-gray">
-            <ScrollView contentContainerStyle={{ padding: 16 }}>
-                <Text className="text-center font-jomhuria text-4xl text-white mb-6">
-                    Nutrition & Weight Trends
-                </Text>
-
-                <View className="mb-6">
+            <Text className="text-center font-jomhuria text-4xl text-white">
+                {getHeader()} Nutrition & Weight Trends
+            </Text>
+            <ScrollView>
+                <View className="w-full">
                     <LineChart
                         data={combinedData}
-                        width={screenWidth - 32}
+                        width={screenWidth-10}
                         height={400}
                         chartConfig={chartConfig}
                         bezier
@@ -123,7 +131,7 @@ function Graph({ data, timeframe = 365 }: { data: DateResponse[]; timeframe?: nu
                         }}
                         withInnerLines={true}
                         withOuterLines={true}
-                        withVerticalLines={true}
+                        withVerticalLines={false}
                         withHorizontalLines={true}
                         withDots={true}
                         withShadow={false}
@@ -146,7 +154,7 @@ function Graph({ data, timeframe = 365 }: { data: DateResponse[]; timeframe?: nu
                 </View>
 
                 {selectedData && (
-                    <View className="mb-6 p-4 bg-light-gray rounded-xl">
+                    <View className="mb-6 px-4 bg-light-gray rounded-xl">
                         <Text className="text-white text-xl font-jomhuria text-center mb-3">
                             Data for {selectedData.date}
                         </Text>
@@ -179,9 +187,6 @@ function Graph({ data, timeframe = 365 }: { data: DateResponse[]; timeframe?: nu
                     </Text>
                     <Text className="text-white font-jomhuria text-2xl text-center opacity-70">
                         * Protein and Weight values are scaled by 10 for better visualization
-                    </Text>
-                    <Text className="text-white font-jomhuria text-xl text-center opacity-50 mt-2">
-                        Tap on data points to view exact values
                     </Text>
                 </View>
             </ScrollView>
