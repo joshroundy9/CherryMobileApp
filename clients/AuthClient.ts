@@ -44,3 +44,25 @@ export const LoginUser = async (request: LoginRequest): Promise<LoginResponse> =
         throw new Error('An unexpected error occurred while logging in the user.');
     }
 };
+
+export const ValidateToken = async (jwt: string) => {
+    const response = await fetch(`${API_URL}/auth/validate`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'JWT-Token': jwt,
+        },
+        body: null,
+    });
+    console.log(jwt);
+    if (response.ok) {
+        console.log('Token validation was successful.');
+        return;
+    } else if (response.status === 400) {
+        const errorData = await response.text();
+        throw new Error(errorData);
+    } else {
+        console.error('Failed to validate token:', response.status, response.text());
+        throw new Error('An unexpected error occurred while validating the token.');
+    }
+};

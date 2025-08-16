@@ -20,7 +20,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
     setLoginResponse: (loginResponse: LoginResponse | null) => void,
     setScreen: ({newScreen, newDate, mealResponse}: {newScreen: string, newDate?: string, mealResponse?: MealResponse}) => void }){
 
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [meals, setMeals] = useState<MealResponse[]>([]);
     const [dateResponse, setDateResponse] = useState<DateResponse | null>(null);
@@ -298,7 +298,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                     <Text className={"text-white font-jomhuria text-4xl mr-6"}>PROTEIN</Text>
                 </View>
             </View>
-            <View className={"flex-1 w-full"}>
+            <ScrollView className={"flex-1 w-full"}>
                 {intervals.map((interval, idx) => {
                     const meal = getMealForInterval(interval.start, interval.end);
                     return (
@@ -354,7 +354,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                         </Text>
                     </View>
                 </View>
-            </View>
+            </ScrollView>
 
             {error && <Text className={"text-red text-3xl font-jomhuria text-center px-2"}>{error}</Text>}
 

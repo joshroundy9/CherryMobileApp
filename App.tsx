@@ -6,9 +6,12 @@ import Authorized from './components/Authorized';
 import Unauthorized from './components/Unauthorized';
 import "./global.css"
 import {LoginResponse} from "./types/Auth";
+import {ValidateToken} from "./clients/AuthClient";
+import Loading from "./components/generic/Loading";
 
 export default function App() {
     const [loginResponse, setLoginResponse] = useState<LoginResponse | null>(null);
+    const [loading, setLoading] = useState(true);
 
   const getLoginResponse = (): LoginResponse | null => {
     return loginResponse;
@@ -23,13 +26,17 @@ export default function App() {
       const storedToken = await AsyncStorage.getItem('loginResponse');
       if (storedToken) {
         try {
-          const parsedLoginResponse: LoginResponse = JSON.parse(storedToken);
+          const parsedLoginResponse: LoginResponse = await JSON.parse(storedToken);
+          await ValidateToken(parsedLoginResponse?.jwt || '');
           setLoginResponse(parsedLoginResponse);
+          setLoading(false);
         } catch (error) {
-          console.error('Error parsing stored login response:', error);
+          console.error('Invalid token:', error);
           // Handle invalid stored data by removing it
           await AsyncStorage.removeItem('loginResponse');
         }
+      } else {
+        setLoading(false);
       }
     };
     loadToken();
@@ -48,6 +55,10 @@ export default function App() {
     await AsyncStorage.removeItem('loginResponse');
     setLoginResponse(null);
   };
+
+  if (loading) {
+    return <Loading/>;
+  }
 
   return (
       <View className={"w-full h-full flex-1 background-gray items-center justify-center text-white"}>
