@@ -110,7 +110,10 @@ function Analytics({loginResponse}: {loginResponse: () => LoginResponse | null})
 
     if (viewingGraph) {
         return (
-            <Graph data={graphData} timeframe={graphLength}/>
+            <Graph data={graphData} timeframe={graphLength} handleGoBack={() => {
+                setViewingGraph(false);
+                setGraphData([]);
+            }}/>
         );
     }
 
