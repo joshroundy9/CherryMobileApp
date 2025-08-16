@@ -96,9 +96,9 @@ function Graph({data, timeframe = 365, onChartInteraction}: {
                         chartPressState={state}>
                         {({ points }) => (
                             <>
-                                <Line points={points.dailyWeight} color="#70aeff" strokeWidth={1.5} connectMissingData={true}/>
+                                <Line points={points.dailyWeight} color="#8fbfff" strokeWidth={1.5} connectMissingData={true}/>
                                 <Line points={points.dailyCalories} color="#ff0606" strokeWidth={1.5} connectMissingData={true}/>
-                                <Line points={points.dailyProtein} color="#69ff87" strokeWidth={1.5} connectMissingData={true}/>
+                                <Line points={points.dailyProtein} color="#8affa1" strokeWidth={1.5} connectMissingData={true}/>
                                 {isActive && (
                                     <>
                                         <ToolTip x={state.x.position} y={state.y.dailyCalories.position} />

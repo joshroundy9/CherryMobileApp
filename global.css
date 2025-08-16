@@ -29,15 +29,15 @@
 }
 
 .heat-map-weight {
-    background-color: #70aeff;
+    background-color: #8fbfff;
 }
 
 .heat-map-nutrition {
-    background-color: #69ff87;
+    background-color: #8affa1;
 }
 .weight-text {
-    color: #70aeff;
+    color: #8fbfff;
 }
 .protein-text {
-    color: #69ff87;
+    color: #8affa1;
 }
