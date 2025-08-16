@@ -1,8 +1,13 @@
 import {API_URL} from "./TrackingClient";
-import {GetAverageDataResponse, GetGraphDataRequest, GetHeatMapDataResponse} from "../types/Analytics";
+import {
+    GetAverageDataResponse,
+    GetGraphDataRequest,
+    GetGraphDataResponse,
+    GetHeatMapDataResponse
+} from "../types/Analytics";
 import {DateResponse} from "../types/Tracking";
 
-export const GetGraphData = async (request: GetGraphDataRequest, jwt: string): Promise<DateResponse[]> => {
+export const GetGraphData = async (request: GetGraphDataRequest, jwt: string): Promise<GetGraphDataResponse[]> => {
     console.log('Getting graph data for user ID:', request.UserID);
     const response = await fetch(`${API_URL}/graphs/data?daysback=${request.DaysBack}`, {
         method: 'GET',
@@ -17,7 +22,7 @@ export const GetGraphData = async (request: GetGraphDataRequest, jwt: string): P
     if (response.ok) {
         const data = await response.json();
         console.log('Graph data retrieved successfully:', data);
-        return data as DateResponse[];
+        return data as GetGraphDataResponse[];
     } else if (response.status === 400) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Invalid request data');

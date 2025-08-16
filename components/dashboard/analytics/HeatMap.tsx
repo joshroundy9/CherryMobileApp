@@ -54,7 +54,7 @@ function HeatMap({ heatMapData }: HeatMapProps) {
             for (let day = 0; day < 7; day++) {
                 const currentDate = new Date(startDate);
                 currentDate.setDate(startDate.getDate() + (week * 7) + day);
-                const dateString = currentDate.toISOString().split('T')[0];
+                const dateString = currentDate.toLocaleDateString('en-CA');
                 const value = dataMap.get(dateString) || 'NONE';
 
                 weekColumn.push(
