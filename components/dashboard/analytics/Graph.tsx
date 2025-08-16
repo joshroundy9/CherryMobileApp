@@ -6,7 +6,7 @@ import { SharedValue, runOnJS, useDerivedValue } from "react-native-reanimated";
 import {CartesianChart, Line, useChartPressState} from "victory-native";
 import { formatDateToShortWithYear } from "../../../utils/AnalyticsUtil";
 
-function Graph({data, timeframe = 365, onChartInteraction}: {
+function Graph({data, timeframe = 7, onChartInteraction}: {
     data: GetGraphDataResponse[],
     timeframe?: number,
     onChartInteraction?: (enabled: boolean) => void
@@ -46,9 +46,9 @@ function Graph({data, timeframe = 365, onChartInteraction}: {
             const originalData = dataMap.get(date);
             return {
                 date,
-                dailyCalories: (originalData?.dailyCalories || originalData?.dailyCalories === 0) ? originalData.dailyCalories : null,
-                dailyProtein: (originalData?.dailyProtein || originalData?.dailyProtein === 0) ? originalData.dailyProtein * 10 : null,
-                dailyWeight: (originalData?.dailyWeight || originalData?.dailyWeight === 0) ? originalData.dailyWeight * 10 : null
+                dailyCalories: (originalData?.dailyCalories && originalData?.dailyCalories !== 0) ? originalData.dailyCalories : null,
+                dailyProtein: (originalData?.dailyProtein && originalData?.dailyProtein !== 0) ? originalData.dailyProtein * 10 : null,
+                dailyWeight: (originalData?.dailyWeight && originalData?.dailyWeight !== 0) ? originalData.dailyWeight * 10 : null
             };
         });
     }, [data, graphTimeframe]);
@@ -75,18 +75,18 @@ function Graph({data, timeframe = 365, onChartInteraction}: {
     return (
         <View className="w-full flex flex-col justify-between">
             <View>
-                <Text className={"font-jomhuria text-5xl text-white px-4"}>
+                <Text className={"font-jomhuria text-5xl text-white"}>
                     {toolTipDate}
                 </Text>
-                <View className={"w-full flex flex-row justify-between px-4"}>
+                <View className={"w-full flex flex-row justify-between"}>
                     <Text className={"font-jomhuria text-3xl text-red w-1/3"}>
-                        {toolTipCalories} kcal
+                        {toolTipCalories}kcal
                     </Text>
                     <Text className={"font-jomhuria text-3xl protein-text w-1/3 text-center"}>
-                        {toolTipProtein} g protein
+                        {toolTipProtein}g Protein
                     </Text>
                     <Text className={"font-jomhuria text-3xl weight-text w-1/3 text-right"}>
-                        {toolTipWeight} lbs BW </Text>
+                        {toolTipWeight}lbs BW </Text>
                 </View>
                 <View className={"w-full h-80"}>
                     <CartesianChart
