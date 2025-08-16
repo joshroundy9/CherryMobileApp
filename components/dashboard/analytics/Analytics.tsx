@@ -162,7 +162,7 @@ function Analytics({loginResponse}: {loginResponse: () => LoginResponse | null})
                         <AnalyticsWidget header={"Average Calorie Intake"} text={`${Math.round(averageData?.averageData.averageCalories || 0)} kcal`}/>
                     </View>
                     <View className={"w-1/2 h-32 pl-1.5"}>
-                        <AnalyticsWidget header={"Weight Change"} text={`${(Number(loginResponse()?.user.weight) || 0) - (Number(loginResponse()?.user.startingWeight) || 0)} lbs`}/>
+                        <AnalyticsWidget header={"Total Weight Change"} text={`${(Number(loginResponse()?.user.weight) || 0) - (Number(loginResponse()?.user.startingWeight) || 0)} lbs`}/>
                     </View>
                 </View>
                 <View className={"w-full flex flex-row"}>
