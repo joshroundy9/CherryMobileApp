@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Dimensions, ScrollView } from 'react-native';
+import {View, Text, Dimensions, ScrollView, TouchableOpacity} from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { DateResponse } from "../../../types/Tracking";
 import {GetGraphDataResponse} from "../../../types/Analytics";
 import { Circle, useFont } from "@shopify/react-native-skia";
 import { SharedValue, runOnJS, useDerivedValue } from "react-native-reanimated";
 import {CartesianChart, Line, useChartPressState} from "victory-native";
-import { formatDateToShort, getTimeframeName, formatDateToShortWithYear } from "../../../utils/AnalyticsUtil";
+import { formatDateToShortWithYear } from "../../../utils/AnalyticsUtil";
 import {GoBackButton} from "../../generic/Buttons";
 
-function Graph({ data, timeframe = 365, handleGoBack }: { data: GetGraphDataResponse[], timeframe?: number, handleGoBack: () => void }) {
+function Graph({ data, timeframe = 365 }: { data: GetGraphDataResponse[], timeframe?: number}) {
     const font = useFont(require("../../../assets/fonts/Jomhuria_400Regular.ttf"), 20);
     const [toolTipDate, setToolTipDate] = useState<string | null>(null);
     const [toolTipCalories, setToolTipCalories] = useState<number | null>(null);
@@ -67,11 +67,8 @@ function Graph({ data, timeframe = 365, handleGoBack }: { data: GetGraphDataResp
     }, [isActive]);
 
     return (
-        <View className="w-full h-full flex flex-col justify-between">
+        <View className="w-full flex flex-col justify-between">
             <View>
-                <Text className={"font-jomhuria text-4xl text-white w-full text-center"}>
-                    {getTimeframeName(graphTimeframe)} Weight and Nutrition Graph
-                </Text>
                 <Text className={"font-jomhuria text-5xl text-white px-4"}>
                     {toolTipDate}
                 </Text>
@@ -108,17 +105,43 @@ function Graph({ data, timeframe = 365, handleGoBack }: { data: GetGraphDataResp
                         )}
                     </CartesianChart>
                 </View>
+                <View className={"w-full px-12 flex flex-row justify-between mt-1"}>
+                    <TouchableOpacity>
+                        <Text className={`font-jomhuria text-2xl px-2 pt-1 rounded ${graphTimeframe === 7 ? 'text-black background-red' : 'text-red'}`}
+                              onPress={() => setGraphTimeframe(7)}>
+                            7D
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity>
+                        <Text className={`font-jomhuria text-2xl px-2 pt-1 rounded ${graphTimeframe === 14 ? 'text-black background-red' : 'text-red'}`}
+                              onPress={() => setGraphTimeframe(14)}>
+                            14D
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity>
+                        <Text className={`font-jomhuria text-2xl px-2 pt-1 rounded ${graphTimeframe === 30 ? 'text-black background-red' : 'text-red'}`}
+                              onPress={() => setGraphTimeframe(30)}>
+                            1M
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity>
+                        <Text className={`font-jomhuria text-2xl px-2 pt-1 rounded ${graphTimeframe === 90 ? 'text-black background-red' : 'text-red'}`}
+                              onPress={() => setGraphTimeframe(90)}>
+                            3M
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity>
+                        <Text className={`font-jomhuria text-2xl px-2 pt-1 rounded ${graphTimeframe === 365 ? 'text-black background-red' : 'text-red'}`}
+                              onPress={() => setGraphTimeframe(365)}>
+                            1Y
+                        </Text>
+                    </TouchableOpacity>
+                </View>
                 <View className={"w-full px-4 mt-4"}>
-                    <Text className={"font-jomhuria text-white text-2xl w-full text-center"}>
-                        Tap and hold on the graph to see details for a specific date.
-                    </Text>
                     <Text className={"font-jomhuria text-white text-2xl w-full text-center"}>
                         * TIP: Consistent tracking greatly improved these graphs!
                     </Text>
                 </View>
-            </View>
-            <View className={"flex flex-row justify-end items-center w-full px-4 align-bottom mb-4"}>
-                <GoBackButton title={"Go Back"} onPress={handleGoBack} />
             </View>
         </View>
     );
