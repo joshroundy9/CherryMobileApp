@@ -40,12 +40,21 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
 
                 setDateResponse(dateResponse);
 
+                if (dateResponse.dailyWeight === '0') {
+                    await updateWeight(loginResponse()?.user.weight || '0');
+                }
+
                 const mealsResponse = await GetMeals({
                     dateID: dateResponse.dateID,
                     userID: loginResponse()?.user.userID || ''
                 }, jwt);
 
                 setMeals(mealsResponse);
+                const newCalories = getTotalCalories({mealList: mealsResponse});
+                const newProtein = getTotalProtein({mealList: mealsResponse});
+                if (newCalories != Number(dateResponse.dailyCalories) || newProtein != Number(dateResponse.dailyProtein)) {
+                    await updateDateNutrition();
+                }
             } catch (e) {
                 if (e instanceof Error) {
                     setError(e.message);
