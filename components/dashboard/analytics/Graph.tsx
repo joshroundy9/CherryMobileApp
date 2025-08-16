@@ -144,7 +144,7 @@ function Graph({data, timeframe = 7, onChartInteraction}: {
                 </View>
                 <View className={"w-full px-4 mt-4"}>
                     <Text className={"font-jomhuria text-white text-2xl w-full text-center"}>
-                        * TIP: Consistent tracking greatly improved these graphs!
+                        * TIP: Consistent tracking greatly improves these graphs!
                     </Text>
                 </View>
             </View>
