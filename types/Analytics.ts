@@ -2,6 +2,12 @@ export interface GetGraphDataRequest {
     UserID: string;
     DaysBack: number;
 }
+export interface GetGraphDataResponse {
+    date: string;
+    dailyCalories: number;
+    dailyProtein: number;
+    dailyWeight: number;
+}
 
 export interface GetHeatMapDataResponse {
     heatMapData: GetHeatMapDataResponseItem[];

@@ -2,7 +2,12 @@ import {LoginResponse} from "../../../types/Auth";
 import {ScrollView, Text, TouchableOpacity, View} from "react-native";
 import {useEffect, useState} from "react";
 import {DateResponse} from "../../../types/Tracking";
-import {GetAverageDataResponse, GetHeatMapDataResponse, GetHeatMapDataResponseItem} from "../../../types/Analytics";
+import {
+    GetAverageDataResponse,
+    GetGraphDataResponse,
+    GetHeatMapDataResponse,
+    GetHeatMapDataResponseItem
+} from "../../../types/Analytics";
 import {GetAverageData, GetGraphData, GetHeatMapData} from "../../../clients/AnalyticsClient";
 import AnalyticsWidget from "../../generic/AnalyticsWidget";
 import Loading from "../../generic/Loading";
@@ -12,7 +17,7 @@ import Graph from "./Graph";
 function Analytics({loginResponse}: {loginResponse: () => LoginResponse | null}) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [graphData, setGraphData] = useState<DateResponse[]>([]);
+    const [graphData, setGraphData] = useState<GetGraphDataResponse[]>([]);
     const [heatMapData, setHeatMapData] = useState<GetHeatMapDataResponse>({ heatMapData: [] });
     const [averageData, setAverageData] = useState<GetAverageDataResponse>();
     const jwt = loginResponse()?.jwt || '';
