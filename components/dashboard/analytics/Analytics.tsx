@@ -1,7 +1,6 @@
 import {LoginResponse} from "../../../types/Auth";
-import {ScrollView, Text, TouchableOpacity, View} from "react-native";
+import {ScrollView, Text, View} from "react-native";
 import {useEffect, useState} from "react";
-import {DateResponse} from "../../../types/Tracking";
 import {
     GetAverageDataResponse,
     GetGraphDataResponse,
@@ -23,7 +22,7 @@ function Analytics({loginResponse}: {loginResponse: () => LoginResponse | null})
     const jwt = loginResponse()?.jwt || '';
     const [monthlyWeightTracking, setMonthlyWeightTracking] = useState<number>(0);
     const [monthlyNutritionTracking, setMonthlyNutritionTracking] = useState<number>(0);
-
+    const [scrollEnabled, setScrollEnabled] = useState(true);
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
@@ -86,9 +85,9 @@ function Analytics({loginResponse}: {loginResponse: () => LoginResponse | null})
 
     return (
         <View className={"w-full h-full"}>
-            <ScrollView className={"flex flex-col w-full h-full px-3"}>
+            <ScrollView className={"flex flex-col w-full h-full px-3"} scrollEnabled={scrollEnabled}>
                 <Text className={"text-center font-jomhuria text-5xl text-white w-full"}>Analytics</Text>
-                <Graph data={graphData}/>
+                <Graph data={graphData} onChartInteraction={setScrollEnabled}/>
                 <View className={"w-full flex flex-row mt-4"}>
                     <View className={"w-1/2 h-32 pr-1.5"}>
                         <AnalyticsWidget header={"Average Calorie Intake"} text={`${Math.round(averageData?.averageData.averageCalories || 0)} kcal`}/>

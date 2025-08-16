@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import {View, Text, Dimensions, ScrollView, TouchableOpacity} from 'react-native';
-import { LineChart } from 'react-native-chart-kit';
-import { DateResponse } from "../../../types/Tracking";
+import React, { useState } from 'react';
+import {View, Text, TouchableOpacity} from 'react-native';
 import {GetGraphDataResponse} from "../../../types/Analytics";
 import { Circle, useFont } from "@shopify/react-native-skia";
 import { SharedValue, runOnJS, useDerivedValue } from "react-native-reanimated";
 import {CartesianChart, Line, useChartPressState} from "victory-native";
 import { formatDateToShortWithYear } from "../../../utils/AnalyticsUtil";
-import {GoBackButton} from "../../generic/Buttons";
 
-function Graph({ data, timeframe = 365 }: { data: GetGraphDataResponse[], timeframe?: number}) {
+function Graph({data, timeframe = 365, onChartInteraction}: {
+    data: GetGraphDataResponse[],
+    timeframe?: number,
+    onChartInteraction?: (enabled: boolean) => void
+}) {
     const font = useFont(require("../../../assets/fonts/Jomhuria_400Regular.ttf"), 20);
     const [toolTipDate, setToolTipDate] = useState<string | null>(null);
     const [toolTipCalories, setToolTipCalories] = useState<number | null>(null);
@@ -41,28 +42,33 @@ function Graph({ data, timeframe = 365 }: { data: GetGraphDataResponse[], timefr
         );
 
         // Fill in missing dates with null values
-        return allDates.map(date => ({
-            date,
-            dailyCalories: (dataMap.get(date)?.dailyCalories || dataMap.get(date)?.dailyCalories === 0) ?? null,
-            dailyProtein: (dataMap.get(date)?.dailyProtein || dataMap.get(date)?.dailyProtein === 0) ?? null,
-            dailyWeight: (dataMap.get(date)?.dailyWeight || dataMap.get(date)?.dailyWeight === 0) ?? null
-        }));
+        return allDates.map(date => {
+            const originalData = dataMap.get(date);
+            return {
+                date,
+                dailyCalories: (originalData?.dailyCalories || originalData?.dailyCalories === 0) ? originalData.dailyCalories : null,
+                dailyProtein: (originalData?.dailyProtein || originalData?.dailyProtein === 0) ? originalData.dailyProtein * 10 : null,
+                dailyWeight: (originalData?.dailyWeight || originalData?.dailyWeight === 0) ? originalData.dailyWeight * 10 : null
+            };
+        });
     }, [data, graphTimeframe]);
 
     useDerivedValue(() => {
         if (isActive && state.x.value && state.y) {
+            runOnJS(onChartInteraction)?.(false);
             runOnJS(setToolTipDate)(formatDateToShortWithYear(state.x.value.value));
             runOnJS(setToolTipCalories)(state.y.dailyCalories.value.value);
-            runOnJS(setToolTipProtein)(state.y.dailyProtein.value.value);
-            runOnJS(setToolTipWeight)(state.y.dailyWeight.value.value);
+            runOnJS(setToolTipProtein)(state.y.dailyProtein.value.value/10);
+            runOnJS(setToolTipWeight)(state.y.dailyWeight.value.value/10);
         } else {
-            const currentDate = new Date().toLocaleDateString('en-CA'); // Get today's date in YYYY-MM-DD format
+            runOnJS(onChartInteraction)?.(true);
+            const currentDate = new Date().toLocaleDateString('en-CA');
             const currentData = DATA.find(item => item.date === currentDate);
 
             runOnJS(setToolTipDate)(formatDateToShortWithYear(currentDate));
             runOnJS(setToolTipCalories)(currentData?.dailyCalories || 0);
-            runOnJS(setToolTipProtein)(currentData?.dailyProtein || 0);
-            runOnJS(setToolTipWeight)(currentData?.dailyWeight || 0);
+            runOnJS(setToolTipProtein)(currentData?.dailyProtein ? currentData.dailyProtein/10 : 0);
+            runOnJS(setToolTipWeight)(currentData?.dailyWeight ? currentData.dailyWeight/10 : 0);
         }
     }, [isActive]);
 
@@ -87,7 +93,6 @@ function Graph({ data, timeframe = 365 }: { data: GetGraphDataResponse[], timefr
                         data={DATA}
                         xKey="date"
                         yKeys={["dailyWeight", "dailyCalories", "dailyProtein"]}
-
                         chartPressState={state}>
                         {({ points }) => (
                             <>
