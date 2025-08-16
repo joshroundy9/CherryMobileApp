@@ -14,7 +14,7 @@ import HeatMap from "./HeatMap";
 import Graph from "./Graph";
 
 function Analytics({loginResponse}: {loginResponse: () => LoginResponse | null}) {
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [graphData, setGraphData] = useState<GetGraphDataResponse[]>([]);
     const [heatMapData, setHeatMapData] = useState<GetHeatMapDataResponse>({ heatMapData: [] });
@@ -28,7 +28,7 @@ function Analytics({loginResponse}: {loginResponse: () => LoginResponse | null})
             setLoading(true);
             try {
                 const heatMapDataResponse = await GetHeatMapData({
-                    DaysBack: 252,
+                    DaysBack: 365,
                     UserID: loginResponse()?.user.userID || ''
                 }, jwt);
                 setHeatMapData(heatMapDataResponse);

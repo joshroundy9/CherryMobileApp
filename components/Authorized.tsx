@@ -34,7 +34,7 @@ function Authorized({ children, onLogout, loginResponse, setLoginResponse }: { c
         switch(screen) {
             case 'home':
                 return (
-                    <Home loginResponse={loginResponse}/>
+                    <Home loginResponse={loginResponse} changeScreen={changeScreen}/>
                 );
             case 'tracking':
                 return (
