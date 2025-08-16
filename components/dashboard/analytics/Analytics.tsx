@@ -14,7 +14,7 @@ import HeatMap from "./HeatMap";
 import Graph from "./Graph";
 
 function Analytics({loginResponse}: {loginResponse: () => LoginResponse | null}) {
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [graphData, setGraphData] = useState<GetGraphDataResponse[]>([]);
     const [heatMapData, setHeatMapData] = useState<GetHeatMapDataResponse>({ heatMapData: [] });
@@ -28,7 +28,7 @@ function Analytics({loginResponse}: {loginResponse: () => LoginResponse | null})
             setLoading(true);
             try {
                 const heatMapDataResponse = await GetHeatMapData({
-                    DaysBack: 252,
+                    DaysBack: 365,
                     UserID: loginResponse()?.user.userID || ''
                 }, jwt);
                 setHeatMapData(heatMapDataResponse);
@@ -86,14 +86,16 @@ function Analytics({loginResponse}: {loginResponse: () => LoginResponse | null})
     return (
         <View className={"w-full h-full"}>
             <ScrollView className={"flex flex-col w-full h-full px-3"} scrollEnabled={scrollEnabled}>
-                <Text className={"text-center font-jomhuria text-5xl text-white w-full"}>Analytics</Text>
                 <Graph data={graphData} onChartInteraction={setScrollEnabled}/>
                 <View className={"w-full flex flex-row mt-4"}>
                     <View className={"w-1/2 h-32 pr-1.5"}>
                         <AnalyticsWidget header={"Average Calorie Intake"} text={`${Math.round(averageData?.averageData.averageCalories || 0)} kcal`}/>
                     </View>
                     <View className={"w-1/2 h-32 pl-1.5"}>
-                        <AnalyticsWidget header={"Total Weight Change"} text={`${(Number(loginResponse()?.user.weight) || 0) - (Number(loginResponse()?.user.startingWeight) || 0)} lbs`}/>
+                        <AnalyticsWidget
+                            header={"Total Weight Change"}
+                            text={`${(Number(loginResponse()?.user.weight) || 0) - (Number(loginResponse()?.user.startingWeight) || 0) > 0 ? '+' : ''}${(Number(loginResponse()?.user.weight) || 0) - (Number(loginResponse()?.user.startingWeight) || 0)} lbs`}
+                        />
                     </View>
                 </View>
                 <View className={"w-full flex flex-row"}>

@@ -9,7 +9,7 @@ import { formatDateToShortWithYear } from "../../../utils/AnalyticsUtil";
 function Graph({data, timeframe = 7, onChartInteraction}: {
     data: GetGraphDataResponse[],
     timeframe?: number,
-    onChartInteraction?: (enabled: boolean) => void
+    onChartInteraction: (enabled: boolean) => void
 }) {
     const font = useFont(require("../../../assets/fonts/Jomhuria_400Regular.ttf"), 20);
     const [toolTipDate, setToolTipDate] = useState<string | null>(null);
@@ -96,9 +96,9 @@ function Graph({data, timeframe = 7, onChartInteraction}: {
                         chartPressState={state}>
                         {({ points }) => (
                             <>
-                                <Line points={points.dailyWeight} color="#8fbfff" strokeWidth={1.5} connectMissingData={true}/>
+                                <Line points={points.dailyWeight} color="#ffd6d6" strokeWidth={1.5} connectMissingData={true}/>
                                 <Line points={points.dailyCalories} color="#ff0606" strokeWidth={1.5} connectMissingData={true}/>
-                                <Line points={points.dailyProtein} color="#8affa1" strokeWidth={1.5} connectMissingData={true}/>
+                                <Line points={points.dailyProtein} color="#ff8585" strokeWidth={1.5} connectMissingData={true}/>
                                 {isActive && (
                                     <>
                                         <ToolTip x={state.x.position} y={state.y.dailyCalories.position} />

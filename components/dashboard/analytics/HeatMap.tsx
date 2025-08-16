@@ -40,7 +40,7 @@ function HeatMap({ heatMapData }: HeatMapProps) {
         const grid = [];
         const today = new Date();
         const startDate = new Date(today);
-        startDate.setDate(today.getDate() - 209); // 30 weeks * 7 days = 210 days
+        startDate.setDate(today.getDate() - 363); // 30 weeks * 7 days = 210 days
 
         // Create a map for quick lookup
         const dataMap = new Map();
@@ -49,7 +49,7 @@ function HeatMap({ heatMapData }: HeatMapProps) {
         });
 
         // Generate 30 columns (weeks) and 7 rows (days)
-        for (let week = 0; week < 30; week++) {
+        for (let week = 0; week < 52; week++) {
             const weekColumn = [];
             for (let day = 0; day < 7; day++) {
                 const currentDate = new Date(startDate);
