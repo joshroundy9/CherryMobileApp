@@ -144,7 +144,7 @@ function Calendar({loginResponse, setScreen}: {
                     <TouchableOpacity onPress={() => handleCurrentDate()}>
                         <Text className={"font-jomhuria text-3xl text-red pt-1"}>Reset</Text>
                     </TouchableOpacity>
-                    <RedButton title={"Start Logging Today's Meals"} onPress={handleLogButtonPress} />
+                    <RedButton title={" Start Logging Today's Meals "} onPress={handleLogButtonPress} />
                 </View>
             </View>
 

@@ -40,10 +40,6 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
 
                 setDateResponse(dateResponse);
 
-                if (Number(dateResponse.dailyWeight) === 0) {
-                    await updateWeight(loginResponse()?.user.weight || '0', dateResponse);
-                }
-
                 const mealsResponse = await GetMeals({
                     dateID: dateResponse.dateID,
                     userID: loginResponse()?.user.userID || ''
@@ -359,7 +355,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
             {error && <Text className={"text-red text-3xl font-jomhuria text-center px-2"}>{error}</Text>}
 
             <View className={"flex flex-row justify-between items-center w-full px-4 align-bottom mb-4"}>
-                <RedButton title={` Update Weight: ${Number(dateResponse?.dailyWeight) === 0 ? loginResponse()?.user.weight : dateResponse?.dailyWeight} lbs `} onPress={handleUpdateWeight} />
+                <RedButton title={` Update Weight: ${Number(dateResponse?.dailyWeight)} lbs `} onPress={handleUpdateWeight} />
                 <GoBackButton title={"Go Back"} onPress={handleGoBack} />
             </View>
         </View>
