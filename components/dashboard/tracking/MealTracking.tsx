@@ -40,7 +40,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
 
                 setDateResponse(dateResponse);
 
-                if (dateResponse.dailyWeight === '0') {
+                if (Number(dateResponse.dailyWeight) === 0) {
                     await updateWeight(loginResponse()?.user.weight || '0');
                 }
 
@@ -53,7 +53,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                 const newCalories = getTotalCalories({mealList: mealsResponse});
                 const newProtein = getTotalProtein({mealList: mealsResponse});
                 if (newCalories != Number(dateResponse.dailyCalories) || newProtein != Number(dateResponse.dailyProtein)) {
-                    await updateDateNutrition();
+                    await updateDateNutrition(getTotalCalories({mealList: mealsResponse}), getTotalProtein({mealList: mealsResponse}), dateResponse);
                 }
             } catch (e) {
                 if (e instanceof Error) {
@@ -74,7 +74,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
     };
 
     const handleGoBack = () => {
-        updateDateNutrition().then( () => {
+        updateDateNutrition(getTotalCalories({mealList: meals}), getTotalProtein({mealList: meals}), dateResponse).then(() => {
             setScreen({newScreen: 'calendar'});
             }
         );
@@ -90,7 +90,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
     }
 
     const createMeal = async (mealName: string) => {
-        await updateDateNutrition();
+        await updateDateNutrition(getTotalCalories({mealList: meals}), getTotalProtein({mealList: meals}), dateResponse);
         CreateMeal({
             mealName: mealName,
             userID: `${loginResponse()?.user.userID}`,
@@ -121,7 +121,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
     }
     const deleteMeal = async (mealID: string) => {
         try {
-            await updateDateNutrition();
+            await updateDateNutrition(getTotalCalories({mealList: meals}), getTotalProtein({mealList: meals}), dateResponse);
             await DeleteMeal({
                 userID: loginResponse()?.user.userID || '',
                 mealID: mealID
@@ -136,7 +136,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
         }
     }
 
-    const updateDateNutrition = async () => {
+    const updateDateNutrition = async (totalCalories: number, totalProtein: number, dateResponse: DateResponse) => {
         if (!dateResponse) {
             setError('Date response is not available');
             return;
@@ -145,13 +145,13 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
             await UpdateDateNutrition({
                 dateID: dateResponse.dateID,
                 userID: loginResponse()?.user.userID || '',
-                dailyCalories: getTotalCalories({mealList: meals}).toString(),
-                dailyProtein: getTotalProtein({mealList: meals}).toString()
+                dailyCalories: totalCalories.toString(),
+                dailyProtein: totalProtein.toString()
             }, jwt);
             setDateResponse({
                 ...dateResponse,
-                dailyCalories: getTotalCalories({mealList: meals}).toString(),
-                dailyProtein: getTotalProtein({mealList: meals}).toString()
+                dailyCalories: totalCalories.toString(),
+                dailyProtein: totalProtein.toString()
             });
         } catch (e) {
             if (e instanceof Error) {
