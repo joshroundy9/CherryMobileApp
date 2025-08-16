@@ -61,12 +61,12 @@ function RecentsMealEntry({ properties }: {properties: ManualMealEntryProps}) {
             <View className={"w-full flex-col flex gap-1"}>
                 {mealItemRecents.map((item, index) => (
                     <TouchableOpacity key={index} className={"flex flex-row justify-between items-center px-2 py-4 rounded background-light-gray w-full"} onPress={() => handleSubmit(item.itemName, item.itemCalories.toString(), item.itemProtein.toString())}>
-                        <View className={"flex flex-row"}>
+                        <View className={"flex flex-row w-1/2"}>
                             <Image
                                 source={require('../../../assets/plus.png')}
                                 style={{ width: 32, height: 32 }}
                             />
-                            <Text className={"text-red font-jomhuria text-4xl w-1/2 pl-2"}
+                            <Text className={"text-red font-jomhuria text-4xl pl-2"}
                             numberOfLines={1}
                             ellipsizeMode={"tail"}>
                                 {item.itemName}
