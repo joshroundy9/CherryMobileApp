@@ -41,7 +41,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                 setDateResponse(dateResponse);
 
                 if (Number(dateResponse.dailyWeight) === 0) {
-                    await updateWeight(loginResponse()?.user.weight || '0');
+                    await updateWeight(loginResponse()?.user.weight || '0', dateResponse);
                 }
 
                 const mealsResponse = await GetMeals({
@@ -136,7 +136,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
         }
     }
 
-    const updateDateNutrition = async (totalCalories: number, totalProtein: number, dateResponse: DateResponse) => {
+    const updateDateNutrition = async (totalCalories: number, totalProtein: number, dateResponse: DateResponse | null) => {
         if (!dateResponse) {
             setError('Date response is not available');
             return;
@@ -162,7 +162,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
         }
     }
 
-    const updateWeight = async (weight: string) => {
+    const updateWeight = async (weight: string, dateResponse: DateResponse | null) => {
         if (!dateResponse) {
             setError('Date response is not available');
             return;
@@ -208,6 +208,9 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
             }
         }
     }
+    const handleUpdateWeightTextEntry = (text: string) => {
+        updateWeight(text, dateResponse);
+    }
 
     if (loading) {
         return <Loading/>;
@@ -219,7 +222,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                 properties={{
                     header: `Update Weight: ${Number(dateResponse?.dailyWeight) === 0 ? loginResponse()?.user.weight : dateResponse?.dailyWeight} lbs`,
                     placeholder: `Weight (LBS)`,
-                    onSubmit: updateWeight,
+                    onSubmit: handleUpdateWeightTextEntry,
                     onCancel: () => {
                         setUpdatingWeight(false);
                     },
