@@ -42,24 +42,24 @@ function AccountInformation({ loginResponse, onLogout } : {loginResponse: () => 
                     <RedButton title={"Sign Out"} onPress={onLogout}/>
                 </View>
                 <View className={"w-full mt-auto mb-20 flex flex-col items-center justify-center"}>
-                    <Text className={"text-white font-jomhuria text-4xl text-center"}>Developed by <Text className={"text-red"}>Josh Roundy</Text> in Summer 2025</Text>
-                    <View className={"pl-4 pr-4 w-80 flex flex-row justify-between items-center"}>
+                    <Text className={"text-white font-jomhuria text-2xl text-center"}>Developed by <Text className={"text-red"}>Josh Roundy</Text> in Summer 2025</Text>
+                    <View className={"pl-4 pr-4 w-72 flex flex-row justify-between items-center"}>
                         <TouchableOpacity className={"mt-2"} onPress={() => Linking.openURL('https://www.linkedin.com/in/joshroundy/')}>
                             <Image
                                 source={require('../../assets/linkedin.png')}
-                                style={{ width: 40, height: 40 }}
+                                style={{ width: 30, height: 30 }}
                             />
                         </TouchableOpacity>
                         <TouchableOpacity className={"mt-2"} onPress={() => Linking.openURL('https://github.com/joshroundy9')}>
                             <Image
                                 source={require('../../assets/github.png')}
-                                style={{ width: 40, height: 40 }}
+                                style={{ width: 30, height: 30 }}
                             />
                         </TouchableOpacity>
                         <TouchableOpacity className={"mt-2"} onPress={() => Linking.openURL('https://joshroundy.dev')}>
                             <Image
                                 source={require('../../assets/portfolio.png')}
-                                style={{ width: 40, height: 40 }}
+                                style={{ width: 30, height: 30 }}
                             />
                         </TouchableOpacity>
                     </View>
