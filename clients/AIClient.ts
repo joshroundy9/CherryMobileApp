@@ -1,5 +1,6 @@
 import {API_URL} from "./TrackingClient";
 import {AIDataResponse} from "../types/AI";
+import {getGraphDataRequest} from "../types/Analytics";
 
 export const GetTextNutritionData = async (foodEntry: string, jwt: string): Promise<AIDataResponse> => {
     console.log('Getting text nutrition data for:', foodEntry);

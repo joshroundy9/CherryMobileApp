@@ -29,7 +29,7 @@ function AccountInformation({ loginResponse, onLogout } : {loginResponse: () => 
                 <View className={"background-light-gray w-full pl-1 pt-1 rounded"}>
                     <Text className={"text-white font-jomhuria text-3xl"}>
                         {loginResponse()?.user.createdTS ?
-                            new Date(loginResponse().user.createdTS.split('T')[0]).toLocaleDateString('en-US', {
+                            new Date(loginResponse().user.createdTS.split('T')[0]).toLocaleDateString('en-CA', {
                                 year: 'numeric',
                                 month: 'long',
                                 day: 'numeric'

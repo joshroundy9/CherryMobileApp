@@ -27,3 +27,17 @@
 .background-light-gray {
     background-color: #2D2D2D;
 }
+
+.heat-map-weight {
+    background-color: #8fbfff;
+}
+
+.heat-map-nutrition {
+    background-color: #8affa1;
+}
+.weight-text {
+    color: #8fbfff;
+}
+.protein-text {
+    color: #8affa1;
+}

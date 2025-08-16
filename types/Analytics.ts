@@ -1,17 +1,21 @@
-export interface getGraphDataRequest {
+export interface GetGraphDataRequest {
     UserID: string;
     DaysBack: number;
 }
-
-export interface GetHeatMapDataRequest {
-    UserID: string;
-    DaysBack: number;
+export interface GetGraphDataResponse {
+    date: string;
+    dailyCalories: number;
+    dailyProtein: number;
+    dailyWeight: number;
 }
 
 export interface GetHeatMapDataResponse {
-    heatMapData: {
-        [date: string]: string;
-    }
+    heatMapData: GetHeatMapDataResponseItem[];
+}
+
+export interface GetHeatMapDataResponseItem {
+    date: string;
+    value: string;
 }
 
 export interface GetAverageDataResponse {

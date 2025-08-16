@@ -48,8 +48,10 @@ export const UpdateUserWeight = async (request: UpdateWeightRequest, jwt: string
 
     if (response.ok) {
         const data = await response.json();
+        console.log('User weight updated successfully:', data);
         return data as UserResponse;
     } else if (response.status === 400) {
+        console.error('Error updating weight:', response.status, response.text());
         const errorData = await response.text();
         throw new Error(errorData);
     } else {
