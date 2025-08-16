@@ -1,7 +1,7 @@
 import {LoginResponse} from "../../types/Auth";
 import {Text, View} from "react-native";
 import {useEffect, useState} from "react";
-import {GetAverageData, GetGraphData, GetHeatMapData} from "../../clients/AnalyticsClient";
+import {GetHeatMapData} from "../../clients/AnalyticsClient";
 import {GetHeatMapDataResponse, GetHeatMapDataResponseItem} from "../../types/Analytics";
 import Loading from "../generic/Loading";
 import HeatMap from "./analytics/HeatMap";
@@ -27,7 +27,8 @@ function Home({ loginResponse, changeScreen } : {loginResponse: () => LoginRespo
                 }, jwt);
                 setHeatMapData(heatMapDataResponse);
 
-                calculateMonthlyTracking({heatMap: heatMapDataResponse.heatMapData});            } catch (e) {
+                calculateMonthlyTracking({heatMap: heatMapDataResponse.heatMapData});
+            } catch (e) {
                 if (e instanceof Error) {
                     setError(e.message);
                 } else {
