@@ -174,7 +174,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                 userID: loginResponse()?.user.userID || '',
                 dailyWeight: weight,
             }, jwt);
-            if (date === new Date().toLocaleDateString('en-CA')) {
+            if (date === new Date().toLocaleDateString('en-CA') && Number(weight) > 0) {
                 console.log('Updating user weight in login response');
                 const updatedUser = await UpdateUserWeight({
                     userID: loginResponse()?.user.userID || '',
