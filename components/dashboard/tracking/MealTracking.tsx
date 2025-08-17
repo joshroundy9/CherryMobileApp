@@ -20,7 +20,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
     setLoginResponse: (loginResponse: LoginResponse | null) => void,
     setScreen: ({newScreen, newDate, mealResponse}: {newScreen: string, newDate?: string, mealResponse?: MealResponse}) => void }){
 
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [meals, setMeals] = useState<MealResponse[]>([]);
     const [dateResponse, setDateResponse] = useState<DateResponse | null>(null);
@@ -46,6 +46,11 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                 }, jwt);
 
                 setMeals(mealsResponse);
+                const newCalories = getTotalCalories({mealList: mealsResponse});
+                const newProtein = getTotalProtein({mealList: mealsResponse});
+                if (newCalories != Number(dateResponse.dailyCalories) || newProtein != Number(dateResponse.dailyProtein)) {
+                    await updateDateNutrition(getTotalCalories({mealList: mealsResponse}), getTotalProtein({mealList: mealsResponse}), dateResponse);
+                }
             } catch (e) {
                 if (e instanceof Error) {
                     setError(e.message);
@@ -65,7 +70,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
     };
 
     const handleGoBack = () => {
-        updateDateNutrition().then( () => {
+        updateDateNutrition(getTotalCalories({mealList: meals}), getTotalProtein({mealList: meals}), dateResponse).then(() => {
             setScreen({newScreen: 'calendar'});
             }
         );
@@ -81,7 +86,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
     }
 
     const createMeal = async (mealName: string) => {
-        await updateDateNutrition();
+        await updateDateNutrition(getTotalCalories({mealList: meals}), getTotalProtein({mealList: meals}), dateResponse);
         CreateMeal({
             mealName: mealName,
             userID: `${loginResponse()?.user.userID}`,
@@ -112,7 +117,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
     }
     const deleteMeal = async (mealID: string) => {
         try {
-            await updateDateNutrition();
+            await updateDateNutrition(getTotalCalories({mealList: meals}), getTotalProtein({mealList: meals}), dateResponse);
             await DeleteMeal({
                 userID: loginResponse()?.user.userID || '',
                 mealID: mealID
@@ -127,7 +132,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
         }
     }
 
-    const updateDateNutrition = async () => {
+    const updateDateNutrition = async (totalCalories: number, totalProtein: number, dateResponse: DateResponse | null) => {
         if (!dateResponse) {
             setError('Date response is not available');
             return;
@@ -136,13 +141,13 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
             await UpdateDateNutrition({
                 dateID: dateResponse.dateID,
                 userID: loginResponse()?.user.userID || '',
-                dailyCalories: getTotalCalories({mealList: meals}).toString(),
-                dailyProtein: getTotalProtein({mealList: meals}).toString()
+                dailyCalories: totalCalories.toString(),
+                dailyProtein: totalProtein.toString()
             }, jwt);
             setDateResponse({
                 ...dateResponse,
-                dailyCalories: getTotalCalories({mealList: meals}).toString(),
-                dailyProtein: getTotalProtein({mealList: meals}).toString()
+                dailyCalories: totalCalories.toString(),
+                dailyProtein: totalProtein.toString()
             });
         } catch (e) {
             if (e instanceof Error) {
@@ -153,7 +158,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
         }
     }
 
-    const updateWeight = async (weight: string) => {
+    const updateWeight = async (weight: string, dateResponse: DateResponse | null) => {
         if (!dateResponse) {
             setError('Date response is not available');
             return;
@@ -169,7 +174,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                 userID: loginResponse()?.user.userID || '',
                 dailyWeight: weight,
             }, jwt);
-            if (date === new Date().toLocaleDateString('en-CA')) {
+            if (date === new Date().toLocaleDateString('en-CA') && Number(weight) > 0) {
                 console.log('Updating user weight in login response');
                 const updatedUser = await UpdateUserWeight({
                     userID: loginResponse()?.user.userID || '',
@@ -199,6 +204,9 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
             }
         }
     }
+    const handleUpdateWeightTextEntry = (text: string) => {
+        updateWeight(text, dateResponse);
+    }
 
     if (loading) {
         return <Loading/>;
@@ -210,7 +218,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                 properties={{
                     header: `Update Weight: ${Number(dateResponse?.dailyWeight) === 0 ? loginResponse()?.user.weight : dateResponse?.dailyWeight} lbs`,
                     placeholder: `Weight (LBS)`,
-                    onSubmit: updateWeight,
+                    onSubmit: handleUpdateWeightTextEntry,
                     onCancel: () => {
                         setUpdatingWeight(false);
                     },
@@ -286,11 +294,11 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                     <Text className={"text-white font-jomhuria text-4xl mr-6"}>PROTEIN</Text>
                 </View>
             </View>
-            <View className={"flex-1 w-full"}>
+            <ScrollView className={"flex-1 w-full"}>
                 {intervals.map((interval, idx) => {
                     const meal = getMealForInterval(interval.start, interval.end);
                     return (
-                        <View key={idx} className="border-b border-b-gray-700 w-full flex flex-row items-center justify-between px-2 pb-1 pt-2 background-gray">
+                        <View key={idx} className="border-bottom-light-gray w-full flex flex-row items-center justify-between px-2 pb-1 pt-2 background-gray">
                             {meal ? (
                                 <View className={"flex w-full flex-row justify-between px-0.5"}>
                                     <TouchableOpacity className={"flex flex-row gap-1 w-1/2"} onPress={() => setScreen({newScreen: 'mealitem', newDate: date, mealResponse: meal})}>
@@ -342,12 +350,12 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                         </Text>
                     </View>
                 </View>
-            </View>
+            </ScrollView>
 
             {error && <Text className={"text-red text-3xl font-jomhuria text-center px-2"}>{error}</Text>}
 
             <View className={"flex flex-row justify-between items-center w-full px-4 align-bottom mb-4"}>
-                <RedButton title={` Update Weight: ${Number(dateResponse?.dailyWeight) === 0 ? loginResponse()?.user.weight : dateResponse?.dailyWeight} lbs `} onPress={handleUpdateWeight} />
+                <RedButton title={` Update Weight: ${Number(dateResponse?.dailyWeight)} lbs `} onPress={handleUpdateWeight} />
                 <GoBackButton title={"Go Back"} onPress={handleGoBack} />
             </View>
         </View>

@@ -104,7 +104,7 @@ function Calendar({loginResponse, setScreen}: {
     });
 
     return (
-        <ScrollView className="flex-1 background-gray p-4 w-full" contentContainerClassName="flex-grow justify-start items-center">
+        <ScrollView className="flex-1 background-gray px-4 w-full" contentContainerClassName="flex-grow justify-start items-center">
             <Text className="text-3xl font-jomhuria text-white text-center mb-4">Select a date to start tracking</Text>
             
             {/* Month navigation */}
@@ -144,7 +144,7 @@ function Calendar({loginResponse, setScreen}: {
                     <TouchableOpacity onPress={() => handleCurrentDate()}>
                         <Text className={"font-jomhuria text-3xl text-red pt-1"}>Reset</Text>
                     </TouchableOpacity>
-                    <RedButton title={"Start Logging Today's Meals"} onPress={handleLogButtonPress} />
+                    <RedButton title={" Start Logging Today's Meals "} onPress={handleLogButtonPress} />
                 </View>
             </View>
 

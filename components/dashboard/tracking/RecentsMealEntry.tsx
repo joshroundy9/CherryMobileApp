@@ -16,7 +16,7 @@ function RecentsMealEntry({ properties }: {properties: ManualMealEntryProps}) {
     const [mealItemRecents, setMealItemRecents] = useState<MealItemDTO[]>([]);
     const [error, setError] = useState<string | null>(null);
 
-    const handleSubmit = (text, calories, protein) => {
+    const handleSubmit = (text: string, calories: string, protein: string) => {
         if(loading) return;
         setLoading(true);
         properties.onSubmit(text, calories, protein, true);
@@ -29,7 +29,11 @@ function RecentsMealEntry({ properties }: {properties: ManualMealEntryProps}) {
                 setMealItemRecents(response);
             } catch (error) {
                 console.error('Error fetching recent meal items:', error);
-                setError()
+                if (error instanceof Error) {
+                    setError(error.message);
+                } else {
+                    setError('An unexpected error occurred');
+                }
             } finally {
                 setLoading(false);
             }
@@ -56,13 +60,13 @@ function RecentsMealEntry({ properties }: {properties: ManualMealEntryProps}) {
             </View>
             <View className={"w-full flex-col flex gap-1"}>
                 {mealItemRecents.map((item, index) => (
-                    <TouchableOpacity key={index} className={"flex flex-row justify-between items-center px-2 py-4 rounded background-light-gray w-full"} onPress={() => handleSubmit(item.itemName, item.itemCalories, item.itemProtein)}>
-                        <View className={"flex flex-row gap-2.5"}>
+                    <TouchableOpacity key={index} className={"flex flex-row justify-between items-center px-2 py-4 rounded background-light-gray w-full"} onPress={() => handleSubmit(item.itemName, item.itemCalories.toString(), item.itemProtein.toString())}>
+                        <View className={"flex flex-row w-1/2"}>
                             <Image
                                 source={require('../../../assets/plus.png')}
                                 style={{ width: 32, height: 32 }}
                             />
-                            <Text className={"text-red font-jomhuria text-4xl w-52"}
+                            <Text className={"text-red font-jomhuria text-4xl pl-2"}
                             numberOfLines={1}
                             ellipsizeMode={"tail"}>
                                 {item.itemName}

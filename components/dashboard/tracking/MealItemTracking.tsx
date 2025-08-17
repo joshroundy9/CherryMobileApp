@@ -18,7 +18,7 @@ function MealItemTracking({mealResponse, loginResponse, setScreen}: {
     loginResponse: () => LoginResponse | null,
     setScreen: ({newScreen, newDate, mealResponse}: {newScreen: string, newDate?: string, mealResponse?: MealResponse}) => void }){
 
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [mealItems, setMealItems] = useState<MealItemDTO[]>([]);
     const jwt = loginResponse()?.jwt || '';
@@ -98,6 +98,7 @@ function MealItemTracking({mealResponse, loginResponse, setScreen}: {
                         aiGenerated: true
                     };
                     createMealItem(mealItem);
+                    setError('');
                 } else {
                     setError('AI could not generate a valid meal item. Please try again with a different description.');
                     setAddingWithAI(false);
@@ -111,6 +112,7 @@ function MealItemTracking({mealResponse, loginResponse, setScreen}: {
             setAddingWithAI(false);
             return;
         }
+        setError('');
         setLoading(true);
         CreateMealItem(mealItem, jwt).then(response => {
             mealItem.itemID = response.itemID;
@@ -349,7 +351,7 @@ function MealItemTracking({mealResponse, loginResponse, setScreen}: {
             </ScrollView>
 
             {error && <Text className={"text-red text-3xl font-jomhuria text-center px-2 my-1"}>{error}</Text>}
-            <View className={"flex flex-row justify-between w-full px-4 mb-3 mt-2 border-b border-b-gray-700"}>
+            <View className={"flex flex-row justify-between w-full px-4 mb-3 mt-2 border-bottom-light-gray"}>
                 <Text className={"font-jomhuria text-white text-4xl"}>Meal Totals </Text>
                 <View className={"flex flex-row"}>
                     <Text className={"mr-2 font-jomhuria text-white text-4xl text-right"}>

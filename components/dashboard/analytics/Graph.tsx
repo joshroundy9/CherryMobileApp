@@ -4,7 +4,7 @@ import {GetGraphDataResponse} from "../../../types/Analytics";
 import { Circle, useFont } from "@shopify/react-native-skia";
 import { SharedValue, runOnJS, useDerivedValue } from "react-native-reanimated";
 import {CartesianChart, Line, useChartPressState} from "victory-native";
-import { formatDateToShortWithYear } from "../../../utils/AnalyticsUtil";
+import { formatDateToShortWithYear } from "../../../utils/AnalyticsUtils";
 
 function Graph({data, timeframe = 7, onChartInteraction}: {
     data: GetGraphDataResponse[],

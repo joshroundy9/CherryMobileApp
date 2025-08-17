@@ -28,6 +28,10 @@
     background-color: #2D2D2D;
 }
 
+.border-bottom-light-gray {
+    border-bottom: 1px solid #2D2D2D;
+}
+
 .heat-map-weight {
     background-color: #8fbfff;
 }

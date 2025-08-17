@@ -12,8 +12,6 @@ function Authorized({ children, onLogout, loginResponse, setLoginResponse }: { c
     const fadeAnim = useRef(new Animated.Value(1)).current;
 
     const changeScreen = (newScreen: string) => {
-        if (newScreen === screen) return;
-
         Animated.sequence([
             Animated.timing(fadeAnim, {
                 toValue: 0,
@@ -27,7 +25,15 @@ function Authorized({ children, onLogout, loginResponse, setLoginResponse }: { c
             }),
         ]).start();
 
-        setTimeout(() => setScreen(newScreen), 150);
+        setTimeout(() => {
+            if (newScreen === screen && screen !== '' && (screen === 'home' || screen === 'analytics')) {
+                // Force re-render by temporarily setting to null then back to current screen
+                setScreen('');
+                setTimeout(() => setScreen(newScreen), 10);
+            } else {
+                setScreen(newScreen);
+            }
+        }, 150);
     };
 
     const renderContent = () => {
@@ -55,7 +61,7 @@ function Authorized({ children, onLogout, loginResponse, setLoginResponse }: { c
 
     return (
         <View className={"w-full h-full flex flex-col"}>
-            <View className={"w-full flex flex-row justify-between items-center px-4 pt-4"}>
+            <View className={"w-full flex flex-row justify-between items-center px-4 pt-6"}>
                 <SmallLogo />
                 <Text className="text-red font-jomhuria text-4xl">{loginResponse()?.user.username}</Text>
             </View>

@@ -72,7 +72,9 @@ function Home({ loginResponse, changeScreen } : {loginResponse: () => LoginRespo
       <View className={"px-4 w-full h-full flex flex-col items-center justify-start"}>
         <View className={"flex flex-col justify-between w-full h-full"}>
             <Text className={"text-white text-5xl font-jomhuria w-full text-start"}>Welcome back <Text className={"text-red"}>{user?.username}</Text></Text>
-            { (heatMapData.heatMapData && heatMapData.heatMapData.length > 0 && heatMapData.heatMapData[heatMapData.heatMapData.length-1].value === 'BOTH') ?                (
+            { (heatMapData.heatMapData && heatMapData.heatMapData.length > 0
+                && heatMapData.heatMapData[heatMapData.heatMapData.length-1].value === 'BOTH'
+            && heatMapData.heatMapData[heatMapData.heatMapData.length-1].date === new Date().toLocaleDateString('en-CA')) ?                (
                     <View className={"w-full"}>
                         <Text className={"text-white text-4xl font-jomhuria"}>
                             You have completed your tracking for today! Great job!
@@ -103,7 +105,7 @@ function Home({ loginResponse, changeScreen } : {loginResponse: () => LoginRespo
             <View className={"flex flex-col w-full"}>
             {error && (
                 <View className={"w-full"}>
-                    <Text className={"text-red text-2xl font-jomhuria text-center"}>)
+                    <Text className={"text-red text-2xl font-jomhuria text-center"}>
                         {error}
                     </Text>
                 </View>
