@@ -107,52 +107,6 @@ export const UpdateDateWeight = async (request: UpdateDateRequest, jwt: string):
     }
 };
 
-export const UpdateDateNutrition = async (request: UpdateDateRequest, jwt: string): Promise<DateResponse> => {
-    const response = await fetch(`${API_URL}/data/date/update-nutrition?dateid=` + request.dateID + '&calories=' + request.dailyCalories + '&protein=' + request.dailyProtein, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + jwt,
-            'User-ID': request.userID,
-        },
-        body: null,
-    });
-
-    if (response.ok) {
-        const data = await response.json();
-        return data as DateResponse;
-    } else if (response.status === 400) {
-        const errorData = await response.text();
-        throw new Error(errorData);
-    } else {
-        console.error('Failed to update date nutrition:', response.status, response.text());
-        throw new Error('An unexpected error occurred while updating date nutrition.');
-    }
-};
-
-export const UpdateMealNutrition = async (request: UpdateMealRequest, jwt: string): Promise<MealResponse> => {
-    const response = await fetch(`${API_URL}/data/meal/update-nutrition?mealid=` + request.mealID + '&calories=' + request.calories + '&protein=' + request.protein, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + jwt,
-            'User-ID': request.userID,
-        },
-        body: null,
-    });
-
-    if (response.ok) {
-        const data = await response.json();
-        return data as MealResponse;
-    } else if (response.status === 400) {
-        const errorData = await response.text();
-        throw new Error(errorData);
-    } else {
-        console.error('Failed to update date nutrition:', response.status, response.text());
-        throw new Error('An unexpected error occurred while updating date nutrition.');
-    }
-};
-
 export const CreateMeal = async (request: CreateMealRequest, jwt: string): Promise<MealResponse> => {
     console.log('Creating meal with request:', request);
     const response = await fetch(`${API_URL}/data/meal`, {

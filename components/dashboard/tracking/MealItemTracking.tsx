@@ -4,7 +4,6 @@ import {GoBackButton} from "../../generic/Buttons";
 import {useState, useEffect} from "react";
 import {
     CreateMealItem, DeleteMealItem, GetMealItems,
-    UpdateMealNutrition,
 } from '../../../clients/TrackingClient';
 import {MealItemDTO, MealResponse} from "../../../types/Tracking";
 import Loading from "../../generic/Loading";
@@ -55,10 +54,7 @@ function MealItemTracking({mealResponse, loginResponse, setScreen}: {
     }, [mealResponse, jwt, addingWithImage]);
 
     const handleGoBack = () => {
-        updateMealNutrition(mealItems).then(() => {
-                setScreen({newScreen: 'meal'});
-            }
-        );
+        setScreen({newScreen: 'meal'});
     }
 
     const getTotalCalories = ({mealItemList} : {mealItemList: MealItemDTO[]}) => {
@@ -128,7 +124,6 @@ function MealItemTracking({mealResponse, loginResponse, setScreen}: {
         }).finally(() => {
             const newMealItems = [...mealItems, mealItem];
             setMealItems(newMealItems);
-            updateMealNutrition(newMealItems);
             setAddingWithAI(false);
             setLoading(false);
         })
@@ -147,25 +142,7 @@ function MealItemTracking({mealResponse, loginResponse, setScreen}: {
             }
         } finally {
             const mealItemList = mealItems.filter(meal => meal.itemID !== mealItemID);
-            await updateMealNutrition(mealItemList);
             setMealItems(mealItemList);
-        }
-    }
-
-    const updateMealNutrition = async (mealItemList: MealItemDTO[]) => {
-        try {
-            await UpdateMealNutrition({
-                mealID: mealResponse.mealID,
-                userID: loginResponse()?.user.userID || '',
-                calories: getTotalCalories({mealItemList: mealItemList}).toString(),
-                protein: getTotalProtein({mealItemList: mealItemList}).toString()
-            }, jwt);
-        } catch (e) {
-            if (e instanceof Error) {
-                setError(e.message);
-            } else {
-                setError('An unexpected error occurred while updating the date nutrition.');
-            }
         }
     }
 

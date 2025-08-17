@@ -6,7 +6,7 @@ import {
     CreateMeal,
     DeleteMeal,
     GetMeals,
-    GetOrCreateDate, UpdateDateNutrition,
+    GetOrCreateDate,
     UpdateDateWeight,
     UpdateUserWeight
 } from '../../../clients/TrackingClient';
@@ -46,11 +46,6 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                 }, jwt);
 
                 setMeals(mealsResponse);
-                const newCalories = getTotalCalories({mealList: mealsResponse});
-                const newProtein = getTotalProtein({mealList: mealsResponse});
-                if (newCalories != Number(dateResponse.dailyCalories) || newProtein != Number(dateResponse.dailyProtein)) {
-                    await updateDateNutrition(getTotalCalories({mealList: mealsResponse}), getTotalProtein({mealList: mealsResponse}), dateResponse);
-                }
             } catch (e) {
                 if (e instanceof Error) {
                     setError(e.message);
@@ -70,11 +65,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
     };
 
     const handleGoBack = () => {
-        updateDateNutrition(getTotalCalories({mealList: meals}), getTotalProtein({mealList: meals}), dateResponse).then(() => {
-            setScreen({newScreen: 'calendar'});
-            }
-        );
-
+        setScreen({newScreen: 'calendar'});
     }
 
     const getTotalCalories = ({mealList} : {mealList: MealResponse[]}) => {
@@ -85,8 +76,15 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
         return mealList.reduce((total, meal) => total + meal.mealProtein, 0);
     }
 
+    const formatTime12Hour = (time24: string) => {
+        const [hours, minutes] = time24.split(':');
+        const hour = parseInt(hours, 10);
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        const hour12 = hour % 12 || 12;
+        return `${hour12}:${minutes} ${ampm}`;
+    };
+
     const createMeal = async (mealName: string) => {
-        await updateDateNutrition(getTotalCalories({mealList: meals}), getTotalProtein({mealList: meals}), dateResponse);
         CreateMeal({
             mealName: mealName,
             userID: `${loginResponse()?.user.userID}`,
@@ -117,7 +115,6 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
     }
     const deleteMeal = async (mealID: string) => {
         try {
-            await updateDateNutrition(getTotalCalories({mealList: meals}), getTotalProtein({mealList: meals}), dateResponse);
             await DeleteMeal({
                 userID: loginResponse()?.user.userID || '',
                 mealID: mealID
@@ -128,32 +125,6 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                 setError(e.message);
             } else {
                 setError('An unexpected error occurred while deleting the meal.');
-            }
-        }
-    }
-
-    const updateDateNutrition = async (totalCalories: number, totalProtein: number, dateResponse: DateResponse | null) => {
-        if (!dateResponse) {
-            setError('Date response is not available');
-            return;
-        }
-        try {
-            await UpdateDateNutrition({
-                dateID: dateResponse.dateID,
-                userID: loginResponse()?.user.userID || '',
-                dailyCalories: totalCalories.toString(),
-                dailyProtein: totalProtein.toString()
-            }, jwt);
-            setDateResponse({
-                ...dateResponse,
-                dailyCalories: totalCalories.toString(),
-                dailyProtein: totalProtein.toString()
-            });
-        } catch (e) {
-            if (e instanceof Error) {
-                setError(e.message);
-            } else {
-                setError('An unexpected error occurred while updating the date nutrition.');
             }
         }
     }
@@ -233,7 +204,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
         return (
             <TextEntry
                 properties={{
-                    header: `Create Meal: ${addMealTime}`,
+                    header: `Create Meal: ${formatTime12Hour(addMealTime)}`,
                     placeholder: `Enter meal name`,
                     onSubmit: createMeal,
                     onCancel: () => {
