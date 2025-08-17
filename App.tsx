@@ -34,6 +34,7 @@ export default function App() {
           console.error('Invalid token:', error);
           // Handle invalid stored data by removing it
           await AsyncStorage.removeItem('loginResponse');
+          setLoading(false);
         }
       } else {
         setLoading(false);

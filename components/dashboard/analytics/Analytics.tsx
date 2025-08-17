@@ -120,8 +120,8 @@ function Analytics({loginResponse}: {loginResponse: () => LoginResponse | null})
                 <HeatMap heatMapData={heatMapData.heatMapData}/>
             </ScrollView>
             {error && (
-                <View className={"w-full"}>
-                    <Text className={"text-red text-2xl font-jomhuria text-center"}>)
+                 <View className={"w-full"}>
+                    <Text className={"text-red text-2xl font-jomhuria text-center"}>
                         {error}
                     </Text>
                 </View>

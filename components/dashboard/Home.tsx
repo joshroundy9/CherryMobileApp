@@ -105,7 +105,7 @@ function Home({ loginResponse, changeScreen } : {loginResponse: () => LoginRespo
             <View className={"flex flex-col w-full"}>
             {error && (
                 <View className={"w-full"}>
-                    <Text className={"text-red text-2xl font-jomhuria text-center"}>)
+                    <Text className={"text-red text-2xl font-jomhuria text-center"}>
                         {error}
                     </Text>
                 </View>
