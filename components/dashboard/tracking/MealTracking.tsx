@@ -298,7 +298,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                 {intervals.map((interval, idx) => {
                     const meal = getMealForInterval(interval.start, interval.end);
                     return (
-                        <View key={idx} className="border-b border-b-gray-700 w-full flex flex-row items-center justify-between px-2 pb-1 pt-2 background-gray">
+                        <View key={idx} className="border-bottom-light-gray w-full flex flex-row items-center justify-between px-2 pb-1 pt-2 background-gray">
                             {meal ? (
                                 <View className={"flex w-full flex-row justify-between px-0.5"}>
                                     <TouchableOpacity className={"flex flex-row gap-1 w-1/2"} onPress={() => setScreen({newScreen: 'mealitem', newDate: date, mealResponse: meal})}>
