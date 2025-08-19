@@ -5,7 +5,7 @@ This allows its users to more accurately make dietary adjustments
 to lose weight, gain muscle, or reach their other fitness goals!
 
 ## Youtube Overview
-[![Josh Roundy on YouTube](https://i.ytimg.com/vi/IligeviHT-M/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLBSs1LjCeiiuzzGoyFB_rqaKufOyA)](https://www.youtube.com/watch?v=UaZFytZe6NA "Cherry Mobile Overview")
+[![Josh Roundy on YouTube](https://i.ytimg.com/vi/UaZFytZe6NA/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLBSs1LjCeiiuzzGoyFB_rqaKufOyA)](https://www.youtube.com/watch?v=UaZFytZe6NA "Cherry Mobile Overview")
 
 ## Planning
 NOTE: Figma was used as a rough draft and several design changes were made afterward
@@ -17,12 +17,12 @@ All data is transmitted with HTTPS and securely stored on an AWS RDS PostgreSQL 
 
 ## Backend
 Cherry's backend is made with a Spring Boot authentication and data API
-that connects with a Microsoft SQL Server database and the OpenAI API. 
+that connects with a PostgreSQL database and the OpenAI API. 
 <br><br>
 The Spring Boot web server is deployed to an AWS EC2 instance and the database uses Postgres SQL RDS.
 
 ## Frontend
-Cherry's front end consists of a React Native mobile app that makes HTTP requests
+Cherry Mobile's front end consists of a React Native mobile app that makes HTTP requests
 to the back end, getting the authorization and data it needs.
 
 ## Conclusion
