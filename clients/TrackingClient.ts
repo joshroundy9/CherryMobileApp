@@ -27,8 +27,7 @@ export const GetOrCreateDate = async (request: DateRequest, jwt: string): Promis
         console.log('Date retrieved or created successfully:', data);
         return data as DateResponse;
     } else if (response.status === 400) {
-        const errorData = await response.text();
-        throw new Error(errorData);
+        throw new Error('Invalid date or user ID');
     } else {
         console.error('Failed to retrieve date:', response.status, response.text());
         throw new Error('An unexpected error occurred while creating the date.');
@@ -52,8 +51,7 @@ export const UpdateUserWeight = async (request: UpdateWeightRequest, jwt: string
         return data as UserResponse;
     } else if (response.status === 400) {
         console.error('Error updating weight:', response.status, response.text());
-        const errorData = await response.text();
-        throw new Error(errorData);
+        throw new Error('Invalid weight');
     } else {
         console.error('Failed to update weight:', response.status, response.text());
         throw new Error('An unexpected error occurred while updating the user\'s weight.');
@@ -76,8 +74,7 @@ export const GetMeals = async (request: GetMealsRequest, jwt: string): Promise<M
         console.log('Meals retrieved successfully:', data);
         return data as MealResponse[];
     } else if (response.status === 400) {
-        const errorData = await response.text();
-        throw new Error(errorData);
+        throw new Error('Invalid request data');
     } else {
         console.error('Failed to get meals:', response.status, response.text());
         throw new Error('An unexpected error occurred while retrieving meals.');
@@ -99,8 +96,7 @@ export const UpdateDateWeight = async (request: UpdateDateRequest, jwt: string):
         const data = await response.json();
         return data as DateResponse;
     } else if (response.status === 400) {
-        const errorData = await response.text();
-        throw new Error(errorData);
+        throw new Error('Invalid weight');
     } else {
         console.error('Failed to update date weight:', response.status, response.text());
         throw new Error('An unexpected error occurred while updating date weight.');
@@ -123,8 +119,7 @@ export const CreateMeal = async (request: CreateMealRequest, jwt: string): Promi
         const data = await response.json();
         return data as MealResponse;
     } else if (response.status === 400) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Invalid request data');
+        throw new Error('Invalid request data');
     } else {
         console.error('Failed to create meal:', response.status, response.text());
         throw new Error('An unexpected error occurred while creating the meal.');
@@ -145,8 +140,7 @@ export const DeleteMeal = async (request: DeleteMealRequest, jwt: string): Promi
     if (response.ok) {
         return;
     } else if (response.status === 400) {
-        const errorData = await response.text();
-        throw new Error(errorData);
+        throw new Error('Invalid meal ID or user ID');
     } else {
         console.error('Failed to delete meal:', response.status, response.text());
         throw new Error('An unexpected error occurred while deleting the meal.');
@@ -169,8 +163,7 @@ export const GetMealItems = async (request: GetMealItemsRequest, jwt: string): P
         console.log('Meal items retrieved successfully:', data);
         return data as MealItemDTO[];
     } else if (response.status === 400) {
-        const errorData = await response.text();
-        throw new Error(errorData);
+        throw new Error('Invalid meal ID');
     } else {
         console.error('Failed to get meal items:', response.status, response.text());
         throw new Error('An unexpected error occurred while retrieving meal items.');
@@ -193,9 +186,7 @@ export const CreateMealItem = async (request: MealItemDTO, jwt: string): Promise
         const data = await response.json();
         return data as MealItemDTO;
     } else if (response.status === 400) {
-        const errorData = await response.json();
-        console.log('Error data:', errorData);
-        throw new Error(errorData.error || 'Invalid request data');
+        throw new Error('Invalid request data');
     } else {
         console.error('Failed to create meal item:', response.status, response.text());
         throw new Error('An unexpected error occurred while creating the meal item.');
@@ -216,8 +207,7 @@ export const DeleteMealItem = async (request: DeleteMealItemRequest, jwt: string
     if (response.ok) {
         return;
     } else if (response.status === 400) {
-        const errorData = await response.text();
-        throw new Error(errorData);
+        throw new Error('Invalid meal item ID or user ID');
     } else {
         console.error('Failed to delete meal item:', response.status, response.text());
         throw new Error('An unexpected error occurred while deleting the meal item.');
@@ -240,8 +230,29 @@ export const GetMealItemRecents = async (userID: string, jwt: string): Promise<M
         console.log('Meal item recents retrieved successfully:', data);
         return data as MealItemDTO[];
     } else if (response.status === 400) {
-        const errorData = await response.text();
-        throw new Error(errorData);
+        throw new Error('Invalid user ID');
+    } else {
+        console.error('Failed to get meal item recents:', response.status, response.text());
+        throw new Error('An unexpected error occurred while retrieving meal item recents.');
+    }
+};
+
+export const DeleteAccount = async (userID: string, jwt: string): Promise<void> => {
+    const response = await fetch(`${API_URL}/data/user/delete-account`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + jwt,
+            'User-ID': userID,
+        },
+        body: null,
+    });
+
+    if (response.ok) {
+        const data = await response.json();
+        console.log('Account deleted successfully:', data);
+    } else if (response.status === 400) {
+        throw new Error('Invalid user ID');
     } else {
         console.error('Failed to get meal item recents:', response.status, response.text());
         throw new Error('An unexpected error occurred while retrieving meal item recents.');

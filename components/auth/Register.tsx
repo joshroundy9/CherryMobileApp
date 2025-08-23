@@ -1,5 +1,5 @@
 import LargeLogo from "../generic/Logo";
-import {View, Text, TouchableOpacity, TextInput} from 'react-native';
+import {View, Text, TouchableOpacity, TextInput, Linking} from 'react-native';
 import RedButton from "../generic/Buttons";
 import {useState} from "react";
 import {RegisterRequest} from "../../types/Auth";
@@ -14,6 +14,7 @@ function Register({ changeScreen }: { changeScreen: (screen: string, message?: s
     const [bodyWeight, setBodyWeight] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+    const [agreeToPrivacy, setAgreeToPrivacy] = useState(false);
 
     const handleRegister = async () => {
         const registerRequest: RegisterRequest = {
@@ -32,6 +33,10 @@ function Register({ changeScreen }: { changeScreen: (screen: string, message?: s
         }
         if (!username || !email || !password || !bodyWeight) {
             setError("All fields are required");
+            return;
+        }
+        if (!agreeToPrivacy) {
+            setError("You must agree to the privacy policy");
             return;
         }
         setError(null); // Clear any previous errors
@@ -121,6 +126,18 @@ function Register({ changeScreen }: { changeScreen: (screen: string, message?: s
                 onChangeText={setBodyWeight}
                 keyboardType="numeric"
             />
+            <View className="flex-row items-center mb-4 w-full">
+                <TouchableOpacity
+                    onPress={() => setAgreeToPrivacy(!agreeToPrivacy)}
+                    className="mr-2 border border-white h-6 w-6 flex items-center justify-center"
+                >
+                    {agreeToPrivacy && <Text className="text-white">✓</Text>}
+                </TouchableOpacity>
+                <Text className="text-white font-jomhuria text-3xl">I agree to the </Text>
+                <TouchableOpacity onPress={() => Linking.openURL('https://cherry.joshroundy.dev/privacy')}>
+                    <Text className="text-red font-jomhuria text-3xl">privacy policy</Text>
+                </TouchableOpacity>
+            </View>
             <RedButton onPress={() => handleRegister()} title={"Register"} disabled={loading}/>
 
             <View className="flex-row items-center pt-10">

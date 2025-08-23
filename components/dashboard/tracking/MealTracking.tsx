@@ -169,10 +169,11 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
             setUpdatingWeight(false);
         } catch (e) {
             if (e instanceof Error) {
-                setError(e.message);
+                setError('Invalid weight');
             } else {
                 setError('An unexpected error occurred while updating the weight.');
             }
+            setUpdatingWeight(false);
         }
     }
     const handleUpdateWeightTextEntry = (text: string) => {
