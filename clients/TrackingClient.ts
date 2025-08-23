@@ -236,3 +236,25 @@ export const GetMealItemRecents = async (userID: string, jwt: string): Promise<M
         throw new Error('An unexpected error occurred while retrieving meal item recents.');
     }
 };
+
+export const DeleteAccount = async (userID: string, jwt: string): Promise<void> => {
+    const response = await fetch(`${API_URL}/data/user/delete-account`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + jwt,
+            'User-ID': userID,
+        },
+        body: null,
+    });
+
+    if (response.ok) {
+        const data = await response.json();
+        console.log('Account deleted successfully:', data);
+    } else if (response.status === 400) {
+        throw new Error('Invalid user ID');
+    } else {
+        console.error('Failed to get meal item recents:', response.status, response.text());
+        throw new Error('An unexpected error occurred while retrieving meal item recents.');
+    }
+};
