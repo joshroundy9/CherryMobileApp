@@ -1,13 +1,20 @@
-import {TouchableOpacity, Text} from "react-native";
+import {TouchableOpacity, Text, ActivityIndicator, View} from "react-native";
 
 function RedButton({ title, onPress, disabled = false }: { title: string, onPress: () => void, disabled?: boolean }) {
     return (
         <TouchableOpacity
             onPress={onPress}
             disabled={disabled}
-            className={`px-4 py-1 rounded-sm text-red background-red text-black ${disabled ? 'bg-red-400' : 'background-red'}`}
+            className={`px-4 py-1 rounded-sm text-red background-red text-black background-red`}
         >
-            <Text className={"font-jomhuria text-3xl"}>{title}</Text>
+            <View className="relative justify-center items-center">
+                <Text className={`font-jomhuria text-3xl text-center ${disabled ? 'opacity-0' : ''}`}>{title}</Text>
+                {disabled && (
+                    <View className="absolute top-0 left-0 right-0 bottom-0 justify-center items-center">
+                        <ActivityIndicator size="small" color="#2D2D2D" />
+                    </View>
+                )}
+            </View>
         </TouchableOpacity>
     );
 }

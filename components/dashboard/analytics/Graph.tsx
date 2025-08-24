@@ -11,7 +11,6 @@ function Graph({data, timeframe = 7, onChartInteraction}: {
     timeframe?: number,
     onChartInteraction: (enabled: boolean) => void
 }) {
-    const font = useFont(require("../../../assets/fonts/Jomhuria_400Regular.ttf"), 20);
     const [toolTipDate, setToolTipDate] = useState<string | null>(null);
     const [toolTipCalories, setToolTipCalories] = useState<number | null>(null);
     const [toolTipProtein, setToolTipProtein] = useState<number | null>(null);

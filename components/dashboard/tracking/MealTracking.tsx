@@ -21,6 +21,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
     setScreen: ({newScreen, newDate, mealResponse}: {newScreen: string, newDate?: string, mealResponse?: MealResponse}) => void }){
 
     const [loading, setLoading] = useState(true);
+    const [entryLoading, setEntryLoading] = useState(false);
     const [error, setError] = useState('');
     const [meals, setMeals] = useState<MealResponse[]>([]);
     const [dateResponse, setDateResponse] = useState<DateResponse | null>(null);
@@ -69,11 +70,11 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
     }
 
     const getTotalCalories = ({mealList} : {mealList: MealResponse[]}) => {
-        return mealList.reduce((total, meal) => total + meal.mealCalories, 0);
+        return parseFloat(mealList.reduce((total, meal) => total + meal.mealCalories, 0).toString()).toFixed(0);
     }
 
     const getTotalProtein = ({mealList} : {mealList: MealResponse[]}) => {
-        return mealList.reduce((total, meal) => total + meal.mealProtein, 0);
+        return parseFloat(mealList.reduce((total, meal) => total + meal.mealProtein, 0).toString()).toFixed(1);
     }
 
     const formatTime12Hour = (time24: string) => {
@@ -85,6 +86,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
     };
 
     const createMeal = async (mealName: string) => {
+        setEntryLoading(true);
         CreateMeal({
             mealName: mealName,
             userID: `${loginResponse()?.user.userID}`,
@@ -99,7 +101,9 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                 setError('An unexpected error occurred while creating the meal.');
             }
             return;
-        })
+        }).finally(() => {
+            setEntryLoading(false);
+        });
         const newMeal: MealResponse = {
             mealName: mealName,
             time: addMealTime,
@@ -140,6 +144,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
             return;
         }
         try {
+            setEntryLoading(true);
             await UpdateDateWeight({
                 dateID: dateResponse.dateID,
                 userID: loginResponse()?.user.userID || '',
@@ -174,6 +179,8 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                 setError('An unexpected error occurred while updating the weight.');
             }
             setUpdatingWeight(false);
+        } finally {
+            setEntryLoading(false);
         }
     }
     const handleUpdateWeightTextEntry = (text: string) => {
@@ -195,7 +202,8 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                         setUpdatingWeight(false);
                     },
                     buttonText: 'Update Weight',
-                    maxLength: 4
+                    maxLength: 4,
+                    loading: entryLoading
                 }}
             />
         );
@@ -213,7 +221,8 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                         setAddMealTime("");
                     },
                     buttonText: 'Create Meal',
-                    maxLength: 30
+                    maxLength: 30,
+                    loading: entryLoading
                 }}
             />
         );
@@ -284,8 +293,8 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
                                         </Text>
                                     </TouchableOpacity>
                                     <View className={"flex flex-row"}>
-                                        <Text className="text-white font-jomhuria text-3xl mr-9">{meal.mealCalories}</Text>
-                                        <Text className="text-white font-jomhuria text-3xl mr-4 w-16 text-right">{meal.mealProtein}g</Text>
+                                        <Text className="text-white font-jomhuria text-3xl mr-9">{parseFloat(meal.mealCalories).toFixed(0)}</Text>
+                                        <Text className="text-white font-jomhuria text-3xl mr-4 w-16 text-right">{parseFloat(meal.mealProtein).toFixed(1)}g</Text>
                                         <TouchableOpacity className={"mr-1"} onPress={() => deleteMeal(meal.mealID)}>
                                             <Text className={"font-jomhuria text-red text-4xl"}>
                                                 X
@@ -327,7 +336,7 @@ function MealTracking({date, loginResponse, setLoginResponse, setScreen}: {
             {error && <Text className={"text-red text-3xl font-jomhuria text-center px-2"}>{error}</Text>}
 
             <View className={"flex flex-row justify-between items-center w-full px-4 align-bottom mb-4"}>
-                <RedButton title={` Update Weight: ${Number(dateResponse?.dailyWeight)} lbs `} onPress={handleUpdateWeight} />
+                <RedButton title={` Update Weight: ${Number(dateResponse?.dailyWeight)} lbs `} onPress={handleUpdateWeight}/>
                 <GoBackButton title={"Go Back"} onPress={handleGoBack} />
             </View>
         </View>

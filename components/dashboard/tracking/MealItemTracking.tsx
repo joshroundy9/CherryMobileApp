@@ -18,6 +18,7 @@ function MealItemTracking({mealResponse, loginResponse, setScreen}: {
     setScreen: ({newScreen, newDate, mealResponse}: {newScreen: string, newDate?: string, mealResponse?: MealResponse}) => void }){
 
     const [loading, setLoading] = useState(true);
+    const [entryLoading, setEntryLoading] = useState(false);
     const [error, setError] = useState('');
     const [mealItems, setMealItems] = useState<MealItemDTO[]>([]);
     const jwt = loginResponse()?.jwt || '';
@@ -58,14 +59,15 @@ function MealItemTracking({mealResponse, loginResponse, setScreen}: {
     }
 
     const getTotalCalories = ({mealItemList} : {mealItemList: MealItemDTO[]}) => {
-        return mealItemList.reduce((total, meal) => total + meal.itemCalories, 0);
+        return parseFloat(mealItemList.reduce((total, meal) => total + meal.itemCalories, 0).toFixed(0));
     }
 
     const getTotalProtein = ({mealItemList} : {mealItemList: MealItemDTO[]}) => {
-        return mealItemList.reduce((total, meal) => total + meal.itemProtein, 0);
+        return parseFloat(mealItemList.reduce((total, meal) => total + meal.itemProtein, 0).toFixed(1));
     }
 
     const createManualMealItem = (name: string, calories: string, protein: string, aiGenerated: boolean) => {
+        setEntryLoading(true);
         createMealItem({
             itemName: name,
             itemCalories: parseInt(calories, 10),
@@ -77,10 +79,13 @@ function MealItemTracking({mealResponse, loginResponse, setScreen}: {
         }).then(() => {
             setAddingManually(false);
             setAddingRecents(false);
-        })
+        }).finally(() => {
+            setEntryLoading(false);
+        });
     }
 
     const createMealItemWithAI = async (mealName: string) => {
+        setEntryLoading(true);
         await GetTextNutritionData(mealName, jwt)
             .then((response) => {
                 if (response.isValidEntry) {
@@ -100,6 +105,9 @@ function MealItemTracking({mealResponse, loginResponse, setScreen}: {
                     setAddingWithAI(false);
                 }
             })
+            .finally(() => {
+               setEntryLoading(false);
+            });
     }
 
     const createMealItem = async (mealItem: MealItemDTO) => {
@@ -210,6 +218,7 @@ function MealItemTracking({mealResponse, loginResponse, setScreen}: {
                         setAddingWithAI(false);
                     },
                     buttonText: ' Add Meal Item ',
+                    loading: entryLoading
                 }}
             />
         );
@@ -225,7 +234,8 @@ function MealItemTracking({mealResponse, loginResponse, setScreen}: {
                 onSubmit: createManualMealItem,
                 onCancel: () => {
                     setAddingManually(false);
-                }
+                },
+                loading: entryLoading
                 }
             }/>
         );

@@ -9,11 +9,13 @@ interface TextEntryProps {
     placeholder?: string;
     buttonText?: string;
     maxLength?: number;
+    loading: boolean;
 }
 
 interface MealEntryProps {
     onSubmit: (name: string, calories: string, protein: string, aiGenerated: boolean) => void;
     onCancel: () => void;
+    loading: boolean;
 }
 
 export function ManualMealEntry({ properties }: {properties: MealEntryProps}) {
@@ -82,7 +84,7 @@ export function ManualMealEntry({ properties }: {properties: MealEntryProps}) {
                     <Text className={"text-red font-jomhuria text-3xl"}>Clear</Text>
                 </TouchableOpacity>
                 <View className={"flex flex-row gap-2"}>
-                    <RedButton title={" Add Meal Item "} onPress={handleSubmit} disabled={loading}/>
+                    <RedButton title={" Add Meal Item "} onPress={handleSubmit} disabled={properties.loading}/>
                     <GoBackButton title={" Cancel "} onPress={properties.onCancel} />
                 </View>
             </View>
@@ -135,7 +137,7 @@ function TextEntry({ properties }: {properties: TextEntryProps}) {
                                 <Text className={"text-red font-jomhuria text-3xl"}>Clear</Text>
                             </TouchableOpacity>
                             <View className={"flex flex-row gap-2"}>
-                                <RedButton title={properties.buttonText || ''} onPress={handleSubmit} disabled={loading}/>
+                                <RedButton title={properties.buttonText || ''} onPress={handleSubmit} disabled={properties.loading}/>
                                 <GoBackButton title={" Cancel "} onPress={properties.onCancel} />
                             </View>
                         </View>

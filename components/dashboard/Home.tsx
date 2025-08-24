@@ -99,7 +99,7 @@ function Home({ loginResponse, changeScreen } : {loginResponse: () => LoginRespo
                     </View>
                 </View>
                 <View className={"w-60 mt-3.5"}>
-                    <RedButton title={"View Full Tracking Analytics"} onPress={() => {changeScreen("analytics")}}/>
+                    <RedButton title={" View Full Tracking Analytics "} onPress={() => {changeScreen("analytics")}}/>
                 </View>
             </View>
             <View className={"flex flex-col w-full"}>
