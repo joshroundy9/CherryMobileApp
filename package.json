@@ -11,7 +11,7 @@
   "dependencies": {
     "@expo-google-fonts/jomhuria": "^0.4.0",
     "@react-native-async-storage/async-storage": "2.1.2",
-    "@shopify/react-native-skia": "v2.0.0-next.4",
+    "@shopify/react-native-skia": "^2.2.4",
     "expo": "53.0.22",
     "expo-font": "~13.3.2",
     "expo-image-picker": "~16.1.4",
@@ -25,7 +25,8 @@
     "react-native-safe-area-context": "^5.4.0",
     "react-native-svg": "15.11.2",
     "tailwindcss": "^3.4.17",
-    "victory-native": "^36.6.8"
+    "victory-native": "^41.19.2",
+    "react-native-gesture-handler": "~2.24.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
